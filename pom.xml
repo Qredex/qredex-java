@@ -71,7 +71,7 @@
 
         <!-- Test dependencies -->
         <junit.version>5.10.3</junit.version>
-        <wiremock.version>3.9.1</wiremock.version>
+        <wiremock.version>2.35.2</wiremock.version>
         <assertj.version>3.26.3</assertj.version>
     </properties>
 
@@ -98,10 +98,10 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Test: WireMock for HTTP mocking -->
+        <!-- Test: WireMock for HTTP mocking (2.x for Java 8 compatibility) -->
         <dependency>
-            <groupId>org.wiremock</groupId>
-            <artifactId>wiremock</artifactId>
+            <groupId>com.github.tomakehurst</groupId>
+            <artifactId>wiremock-jre8</artifactId>
             <version>${wiremock.version}</version>
             <scope>test</scope>
         </dependency>

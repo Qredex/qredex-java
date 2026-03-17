@@ -282,7 +282,7 @@ If a solution feels hacky, overly magical, or hard to explain to users of the SD
 - **Java:** `8+` (strict minimum; do not use Java 9+ APIs)
 - **Build tool:** Maven (`pom.xml`; `sourceCompatibility = 1.8`, `targetCompatibility = 1.8`)
 - **Dependencies:** `com.squareup.okhttp3:okhttp:4.12.x`, `com.fasterxml.jackson.core:jackson-databind:2.17.x`
-- **Dev dependencies:** `org.junit.jupiter:junit-jupiter:5.10.x`, `org.wiremock:wiremock:3.9.x`, `org.assertj:assertj-core:3.26.x`
+- **Dev dependencies:** `org.junit.jupiter:junit-jupiter:5.10.x`, `com.github.tomakehurst:wiremock-jre8:2.35.x` (Java 8 compatible), `org.assertj:assertj-core:3.26.x`
 - **Code quality:** standard Java compiler warnings; no framework-specific static analysis required in V1
 - **All source files use** appropriate visibility modifiers and `final` where immutable
 
