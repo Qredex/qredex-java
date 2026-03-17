@@ -213,15 +213,15 @@ If a solution feels hacky, overly magical, or hard to explain to users of the SD
 
 ## Package / Layer Rules
 
-- `src/main/java/com/qredex/Qredex.java` → top-level SDK entrypoint and composition root (`Qredex.builder()`, `Qredex.bootstrap()`, `Qredex.init(config)`); implements `Closeable` — call `close()` in tests or short-lived processes to release the HTTP connection pool
+- `src/main/java/com/qredex/Qredex.java` → top-level SDK entrypoint and composition root (`Qredex.builder()`, `Qredex.bootstrap()`, `Qredex.init(config)`); implements `Closeable` — call `close()` in tests or short-lived processes to release the HTTP connection pool; contains `Qredex.QredexAuthClient` as a `static final` inner class (the `qredex.auth()` surface) — it is **not** a separate file
 - `src/main/java/com/qredex/resources/` → resource-specific operation clients (`CreatorsClient`, `LinksClient`, `IntentsClient`, `OrdersClient`, `RefundsClient`)
-- `src/main/java/com/qredex/internal/` → private plumbing not part of the public API (`HttpTransport`, `TokenProvider`, `ApiErrorFactory`, `JsonMapper`, `CachedToken`, `QueryParams`, `QredexUserAgent`)
+- `src/main/java/com/qredex/internal/` → private plumbing not part of the public API (`HttpTransport`, `TokenProvider`, `ApiErrorFactory`, `JsonMapper`, `CachedToken`, `QueryParams`, `QredexUserAgent`); `TokenProvider` caches the OAuth token in memory and refreshes it 30 seconds before expiry (`REFRESH_WINDOW_MS = 30_000`); auth failures (`QredexAuthenticationException`, `QredexAuthorizationException`) are **not retried** — only transient network failures are retried with exponential backoff (`500 × 2^(attempt-1)` ms, capped at 4,000 ms)
 - `src/main/java/com/qredex/exceptions/` → typed exception hierarchy (`QredexException` base, `QredexApiException`, `QredexAuthenticationException`, `QredexAuthorizationException`, `QredexValidationException`, `QredexNotFoundException`, `QredexConflictException`, `QredexRateLimitException`, `QredexNetworkException`, `QredexConfigurationException`)
 - `src/main/java/com/qredex/model/request/` → typed request input objects (`CreateCreatorRequest`, `CreateLinkRequest`, `IssueInfluenceIntentTokenRequest`, `LockPurchaseIntentRequest`, `RecordPaidOrderRequest`, `RecordRefundRequest`, `ListCreatorsRequest`, `ListLinksRequest`, `ListOrdersRequest`)
 - `src/main/java/com/qredex/model/response/` → typed API response objects (`CreatorResponse`, `CreatorPageResponse`, `CreatorListResponse`, `LinkResponse`, `LinkPageResponse`, `LinkListResponse`, `LinkStatsResponse`, `InfluenceIntentResponse`, `PurchaseIntentResponse`, `OrderAttributionResponse`, `OrderAttributionPageResponse`, `OrderAttributionDetailsResponse`, `OrderAttributionScoreBreakdownResponse`, `OrderAttributionTimelineEventResponse`, `OAuthTokenResponse`, `ApiErrorResponse`)
 - `src/main/java/com/qredex/model/standards/` → canonical Qredex enums (`CreatorStatus`, `LinkStatus`, `ResolutionStatus`, `TokenIntegrity`, `IntegrityReason`, `IntegrityBand`, `OriginMatchStatus`, `WindowStatus`, `OrderSource`, `DuplicateConfidence`, `DuplicateReason`, `QredexScope`)
-- `src/main/java/com/qredex/QredexConfig.java` → immutable SDK configuration with builder
-- `src/main/java/com/qredex/QredexEnvironment.java` → environment enum (`PRODUCTION`, `STAGING`, `DEVELOPMENT`)
+- `src/main/java/com/qredex/QredexConfig.java` → immutable SDK configuration with builder; key fields: `timeoutMs` (default 10,000 ms), `maxAuthRetries` (default 3), `userAgentSuffix` (appended to `User-Agent`), `logger` (`QredexLogger`); supports `toBuilder()` for forking an existing config
+- `src/main/java/com/qredex/QredexEnvironment.java` → environment enum: `PRODUCTION` → `https://api.qredex.com`, `STAGING` → `https://staging-api.qredex.com`, `DEVELOPMENT` → `http://localhost:8080`; resolved from the `QREDEX_ENVIRONMENT` env var by `Qredex.bootstrap()`
 - `src/main/java/com/qredex/QredexLogger.java` → minimal logger interface
 - `examples/` → canonical usage only (end-to-end IIT → PIT → order → refund flow)
 - `src/test/java/com/qredex/` → WireMock-based integration tests
@@ -251,6 +251,7 @@ If a solution feels hacky, overly magical, or hard to explain to users of the SD
 ### Good direction
 
 - `Qredex.init(config)` or `Qredex.bootstrap()` or `Qredex.builder()....build()`
+  - `Qredex.bootstrap()` reads: `QREDEX_CLIENT_ID` (required), `QREDEX_CLIENT_SECRET` (required), `QREDEX_ENVIRONMENT` (optional; `production`/`staging`/`development`, defaults to `production`), `QREDEX_SCOPE` (optional)
 - `qredex.creators().create(...)`
 - `qredex.links().create(...)`
 - `qredex.intents().issueInfluenceIntentToken(...)`
@@ -277,6 +278,7 @@ If a solution feels hacky, overly magical, or hard to explain to users of the SD
   - reads may be retried if configured carefully
   - writes must not be blindly retried
   - prefer idempotent external IDs and platform-safe replay patterns
+  - **auth failures (401/403) are never retried** — only transient network errors retry, with exponential backoff
 
 ## Java Implementation Guidelines
 
@@ -297,6 +299,31 @@ mvn clean verify      # run tests + compile checks
 ```
 
 Always run `mvn clean test` before closing work. Report the result.
+
+### Key API Routes
+
+All integration routes live under `/api/v1/integrations/`. The auth token route is separate:
+
+| Method | Path | Client method |
+|--------|------|---------------|
+| `POST` | `/api/v1/auth/token` | `qredex.auth().issueToken()` (internal; auto-managed) |
+| `POST` | `/api/v1/integrations/creators` | `qredex.creators().create(...)` |
+| `GET`  | `/api/v1/integrations/creators/{id}` | `qredex.creators().get(id)` |
+| `GET`  | `/api/v1/integrations/creators` | `qredex.creators().list(...)` |
+| `POST` | `/api/v1/integrations/links` | `qredex.links().create(...)` |
+| `GET`  | `/api/v1/integrations/links/{id}` | `qredex.links().get(id)` |
+| `GET`  | `/api/v1/integrations/links` | `qredex.links().list(...)` |
+| `GET`  | `/api/v1/integrations/links/{id}/stats` | `qredex.links().getStats(id)` |
+| `POST` | `/api/v1/integrations/intents/token` | `qredex.intents().issueInfluenceIntentToken(...)` |
+| `POST` | `/api/v1/integrations/intents/lock` | `qredex.intents().lockPurchaseIntent(...)` |
+| `POST` | `/api/v1/integrations/orders/paid` | `qredex.orders().recordPaidOrder(...)` |
+| `GET`  | `/api/v1/integrations/orders` | `qredex.orders().list(...)` |
+| `GET`  | `/api/v1/integrations/orders/{id}/details` | `qredex.orders().getDetails(id)` |
+| `POST` | `/api/v1/integrations/orders/refund` | `qredex.refunds().recordRefund(...)` → returns `OrderAttributionResponse` |
+
+**Order ingestion HTTP semantics:**
+- HTTP 200/201 → `INGESTED` (new) or `IDEMPOTENT` (same `store_id` + `external_order_id` replayed)
+- HTTP 409 → `REJECTED_SOURCE_POLICY` or `REJECTED_CROSS_SOURCE_DUPLICATE` — check `error_code` on `QredexConflictException`
 
 ### Core language expectations
 
@@ -363,20 +390,39 @@ At minimum cover:
 - To instantiate the SDK in tests, override `baseUrl` to point at the WireMock server and stub the token endpoint first:
 
   ```java
-  WireMockServer wireMock = new WireMockServer(WireMockConfiguration.options().dynamicPort());
-  wireMock.start();
-  WireMock.configureFor("localhost", wireMock.port());
+  @TestInstance(Lifecycle.PER_CLASS)
+  class MyTest {
+      private WireMockServer wireMock;
+      private Qredex qredex;
 
-  Qredex qredex = Qredex.builder()
-      .clientId("test-id")
-      .clientSecret("test-secret")
-      .baseUrl("http://localhost:" + wireMock.port())
-      .build();
+      @BeforeAll
+      void startServer() {
+          wireMock = new WireMockServer(WireMockConfiguration.options().dynamicPort());
+          wireMock.start();
+          WireMock.configureFor("localhost", wireMock.port());
+      }
 
-  // Stub token endpoint first, then the resource endpoint
-  stubFor(post(urlEqualTo("/api/v1/auth/token"))
-      .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json")
-          .withBody("{\"access_token\":\"tok\",\"token_type\":\"Bearer\",\"expires_in\":3600}")));
+      @AfterAll
+      void stopServer() { wireMock.stop(); }
+
+      @BeforeEach
+      void resetAndBuildClient() {
+          wireMock.resetAll();
+          qredex = Qredex.builder()
+              .clientId("test-client-id")
+              .clientSecret("test-client-secret")
+              .baseUrl("http://localhost:" + wireMock.port())
+              .timeoutMs(5_000)
+              .build();
+      }
+
+      // Stub token endpoint before each test that makes resource calls
+      private void stubTokenEndpoint() {
+          stubFor(post(urlEqualTo("/api/v1/auth/token"))
+              .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json")
+                  .withBody("{\"access_token\":\"test-access-token\",\"token_type\":\"Bearer\",\"expires_in\":3600}")));
+      }
+  }
   ```
 
 ## Documentation Rules
