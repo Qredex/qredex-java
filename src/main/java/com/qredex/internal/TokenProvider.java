@@ -24,6 +24,8 @@ package com.qredex.internal;
 
 import com.qredex.QredexConfig;
 import com.qredex.QredexLogger;
+import com.qredex.exceptions.QredexAuthenticationException;
+import com.qredex.exceptions.QredexAuthorizationException;
 import com.qredex.exceptions.QredexNetworkException;
 import com.qredex.model.response.OAuthTokenResponse;
 
@@ -108,8 +110,8 @@ public final class TokenProvider {
                     config.getClientId(), config.getClientSecret(), config.getScope());
                 if (logger != null) logger.info("[qredex] auth: token issued, scope=" + response.getScope());
                 return new CachedToken(response, System.currentTimeMillis());
-            } catch (com.qredex.exceptions.QredexAuthenticationException |
-                     com.qredex.exceptions.QredexAuthorizationException e) {
+            } catch (QredexAuthenticationException |
+                     QredexAuthorizationException e) {
                 // auth failures are not retryable
                 throw e;
             } catch (Exception e) {
