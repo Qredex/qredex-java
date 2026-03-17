@@ -76,4 +76,9 @@ public final class LinkResponse {
     public String getDiscountCode() { return discountCode; }
     public String getCreatedAt() { return createdAt; }
     public String getUpdatedAt() { return updatedAt; }
+
+    @Override
+    public String toString() {
+        return "LinkResponse{id='" + id + "', linkName='" + linkName + "', linkCode='" + linkCode + "', status=" + status + "}";
+    }
 }

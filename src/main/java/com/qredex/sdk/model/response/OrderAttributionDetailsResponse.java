@@ -148,4 +148,11 @@ public final class OrderAttributionDetailsResponse {
     public List<OrderAttributionTimelineEventResponse> getTimeline() { return timeline; }
     public String getCreatedAt() { return createdAt; }
     public String getUpdatedAt() { return updatedAt; }
+
+    @Override
+    public String toString() {
+        return "OrderAttributionDetailsResponse{id='" + id + "', externalOrderId='" + externalOrderId
+                + "', resolutionStatus=" + resolutionStatus + ", integrityScore=" + integrityScore
+                + ", integrityBand=" + integrityBand + "}";
+    }
 }

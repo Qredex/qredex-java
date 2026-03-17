@@ -19,4 +19,9 @@ public final class OrderAttributionTimelineEventResponse {
 
     public String getEventType() { return eventType; }
     public String getOccurredAt() { return occurredAt; }
+
+    @Override
+    public String toString() {
+        return "OrderAttributionTimelineEventResponse{eventType='" + eventType + "', occurredAt='" + occurredAt + "'}";
+    }
 }

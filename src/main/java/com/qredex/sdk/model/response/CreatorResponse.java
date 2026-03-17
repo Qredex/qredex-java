@@ -45,4 +45,9 @@ public final class CreatorResponse {
     public Map<String, String> getSocials() { return socials; }
     public String getCreatedAt() { return createdAt; }
     public String getUpdatedAt() { return updatedAt; }
+
+    @Override
+    public String toString() {
+        return "CreatorResponse{id='" + id + "', handle='" + handle + "', status=" + status + "}";
+    }
 }

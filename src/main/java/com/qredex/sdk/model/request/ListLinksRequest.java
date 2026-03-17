@@ -53,4 +53,9 @@ public final class ListLinksRequest {
 
     /** Returns an empty request (no filters, server defaults). */
     public static ListLinksRequest defaults() { return new Builder().build(); }
+
+    @Override
+    public String toString() {
+        return "ListLinksRequest{page=" + page + ", size=" + size + ", status=" + status + "}";
+    }
 }

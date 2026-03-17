@@ -104,4 +104,9 @@ public final class IssueInfluenceIntentTokenRequest {
             return new IssueInfluenceIntentTokenRequest(this);
         }
     }
+
+    @Override
+    public String toString() {
+        return "IssueInfluenceIntentTokenRequest{linkId='" + linkId + "', landingPath='" + landingPath + "'}";
+    }
 }

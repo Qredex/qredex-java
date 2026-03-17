@@ -65,4 +65,15 @@ public final class OrderAttributionScoreBreakdownResponse {
     public DuplicateConfidence getDuplicateConfidence() { return duplicateConfidence; }
     public Boolean getReviewRequired() { return reviewRequired; }
     public List<String> getReviewReasons() { return reviewReasons; }
+
+    @Override
+    public String toString() {
+        return "OrderAttributionScoreBreakdownResponse{scoreVersion=" + scoreVersion
+                + ", baseScore=" + baseScore + ", originAdjustment=" + originAdjustment
+                + ", duplicateAdjustment=" + duplicateAdjustment + ", finalScore=" + finalScore
+                + ", tokenIntegrity=" + tokenIntegrity + ", integrityReason=" + integrityReason
+                + ", windowStatus=" + windowStatus + ", resolutionStatus=" + resolutionStatus
+                + ", originMatchStatus=" + originMatchStatus + ", duplicateConfidence=" + duplicateConfidence
+                + ", reviewRequired=" + reviewRequired + "}";
+    }
 }

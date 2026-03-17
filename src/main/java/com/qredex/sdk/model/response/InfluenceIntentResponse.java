@@ -64,4 +64,9 @@ public final class InfluenceIntentResponse {
     public String getUserAgentHash() { return userAgentHash; }
     public String getReferrer() { return referrer; }
     public String getLandingPath() { return landingPath; }
+
+    @Override
+    public String toString() {
+        return "InfluenceIntentResponse{id='" + id + "', linkId='" + linkId + "', tokenId='" + tokenId + "'}";
+    }
 }

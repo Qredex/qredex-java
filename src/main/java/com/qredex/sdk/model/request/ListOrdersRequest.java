@@ -36,4 +36,9 @@ public final class ListOrdersRequest {
 
     /** Returns an empty request (no filters, server defaults). */
     public static ListOrdersRequest defaults() { return new Builder().build(); }
+
+    @Override
+    public String toString() {
+        return "ListOrdersRequest{page=" + page + ", size=" + size + "}";
+    }
 }

@@ -84,4 +84,9 @@ public final class LinkListResponse {
     public Long getClicksCount() { return clicksCount; }
     public Long getOrdersCount() { return ordersCount; }
     public Double getRevenueTotal() { return revenueTotal; }
+
+    @Override
+    public String toString() {
+        return "LinkListResponse{id='" + id + "', linkName='" + linkName + "', linkCode='" + linkCode + "', status=" + status + "}";
+    }
 }

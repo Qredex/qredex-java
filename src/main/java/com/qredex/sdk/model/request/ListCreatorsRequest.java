@@ -48,4 +48,9 @@ public final class ListCreatorsRequest {
 
     /** Returns an empty request (no filters, server defaults). */
     public static ListCreatorsRequest defaults() { return new Builder().build(); }
+
+    @Override
+    public String toString() {
+        return "ListCreatorsRequest{page=" + page + ", size=" + size + ", status=" + status + "}";
+    }
 }

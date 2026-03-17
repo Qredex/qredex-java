@@ -149,4 +149,10 @@ public final class RecordPaidOrderRequest {
             return new RecordPaidOrderRequest(this);
         }
     }
+
+    @Override
+    public String toString() {
+        return "RecordPaidOrderRequest{storeId='" + storeId + "', externalOrderId='" + externalOrderId
+                + "', currency='" + currency + "', totalPrice=" + totalPrice + "}";
+    }
 }

@@ -77,4 +77,9 @@ public final class CreateCreatorRequest {
             return new CreateCreatorRequest(this);
         }
     }
+
+    @Override
+    public String toString() {
+        return "CreateCreatorRequest{handle='" + handle + "', displayName='" + displayName + "'}";
+    }
 }

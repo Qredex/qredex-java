@@ -128,4 +128,10 @@ public final class CreateLinkRequest {
             return new CreateLinkRequest(this);
         }
     }
+
+    @Override
+    public String toString() {
+        return "CreateLinkRequest{storeId='" + storeId + "', creatorId='" + creatorId
+                + "', linkName='" + linkName + "', destinationPath='" + destinationPath + "'}";
+    }
 }

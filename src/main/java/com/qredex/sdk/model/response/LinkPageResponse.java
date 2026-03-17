@@ -32,4 +32,9 @@ public final class LinkPageResponse {
     public int getSize() { return size; }
     public long getTotalElements() { return totalElements; }
     public int getTotalPages() { return totalPages; }
+
+    @Override
+    public String toString() {
+        return "LinkPageResponse{page=" + page + ", size=" + size + ", totalElements=" + totalElements + "}";
+    }
 }

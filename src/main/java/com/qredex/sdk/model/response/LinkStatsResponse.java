@@ -47,4 +47,9 @@ public final class LinkStatsResponse {
     public Long getTokenMissingCount() { return tokenMissingCount; }
     public String getLastClickAt() { return lastClickAt; }
     public String getLastOrderAt() { return lastOrderAt; }
+
+    @Override
+    public String toString() {
+        return "LinkStatsResponse{linkId='" + linkId + "', clicksCount=" + clicksCount + ", ordersCount=" + ordersCount + "}";
+    }
 }

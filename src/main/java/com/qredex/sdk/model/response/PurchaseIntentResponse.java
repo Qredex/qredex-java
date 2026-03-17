@@ -107,4 +107,10 @@ public final class PurchaseIntentResponse {
     public Boolean getEligible() { return eligible; }
     public String getCreatedAt() { return createdAt; }
     public String getUpdatedAt() { return updatedAt; }
+
+    @Override
+    public String toString() {
+        return "PurchaseIntentResponse{id='" + id + "', tokenId='" + tokenId
+                + "', eligible=" + eligible + ", windowStatus=" + windowStatus + "}";
+    }
 }

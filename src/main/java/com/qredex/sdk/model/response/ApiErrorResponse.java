@@ -19,4 +19,9 @@ public final class ApiErrorResponse {
 
     public String getErrorCode() { return errorCode; }
     public String getMessage() { return message; }
+
+    @Override
+    public String toString() {
+        return "ApiErrorResponse{errorCode='" + errorCode + "', message='" + message + "'}";
+    }
 }

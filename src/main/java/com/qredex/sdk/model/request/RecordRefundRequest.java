@@ -90,4 +90,10 @@ public final class RecordRefundRequest {
             return new RecordRefundRequest(this);
         }
     }
+
+    @Override
+    public String toString() {
+        return "RecordRefundRequest{storeId='" + storeId + "', externalOrderId='" + externalOrderId
+                + "', externalRefundId='" + externalRefundId + "', refundTotal=" + refundTotal + "}";
+    }
 }

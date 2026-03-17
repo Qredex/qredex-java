@@ -67,4 +67,9 @@ public final class LockPurchaseIntentRequest {
             return new LockPurchaseIntentRequest(this);
         }
     }
+
+    @Override
+    public String toString() {
+        return "LockPurchaseIntentRequest{source='" + source + "'}";
+    }
 }

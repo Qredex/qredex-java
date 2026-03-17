@@ -57,4 +57,9 @@ public final class CreatorListResponse {
     public Long getLinksCount() { return linksCount; }
     public Long getOrdersCount() { return ordersCount; }
     public Double getRevenueTotal() { return revenueTotal; }
+
+    @Override
+    public String toString() {
+        return "CreatorListResponse{id='" + id + "', handle='" + handle + "', status=" + status + "}";
+    }
 }

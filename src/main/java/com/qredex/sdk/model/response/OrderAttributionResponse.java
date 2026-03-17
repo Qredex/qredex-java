@@ -146,4 +146,10 @@ public final class OrderAttributionResponse {
     public ResolutionStatus getResolutionStatus() { return resolutionStatus; }
     public String getCreatedAt() { return createdAt; }
     public String getUpdatedAt() { return updatedAt; }
+
+    @Override
+    public String toString() {
+        return "OrderAttributionResponse{id='" + id + "', externalOrderId='" + externalOrderId
+                + "', resolutionStatus=" + resolutionStatus + ", integrityBand=" + integrityBand + "}";
+    }
 }
