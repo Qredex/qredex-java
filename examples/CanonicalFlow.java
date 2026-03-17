@@ -22,7 +22,7 @@ import com.qredex.sdk.model.response.*;
  *
  * Demonstrates the canonical IIT → PIT → order → refund flow.
  */
-public final class QredexExamples {
+public final class CanonicalFlow {
 
     public static void main(String[] args) {
         // ─────────────────────────────────────────────────────────────────────
