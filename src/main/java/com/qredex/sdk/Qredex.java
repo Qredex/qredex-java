@@ -95,7 +95,35 @@ public final class Qredex {
     // -------------------------------------------------------------------------
 
     /**
+     * Creates a client from an explicit {@link QredexConfig}.
+     *
+     * <p>This is the canonical explicit-configuration path:
+     *
+     * <pre>{@code
+     * Qredex qredex = Qredex.init(
+     *     QredexConfig.builder()
+     *         .clientId("...")
+     *         .clientSecret("...")
+     *         .build()
+     * );
+     * }</pre>
+     *
+     * @param config a fully built {@link QredexConfig}
+     * @return a configured {@link Qredex} client
+     * @throws QredexConfigurationException if the config is invalid
+     */
+    public static Qredex init(QredexConfig config) {
+        if (config == null) {
+            throw new QredexConfigurationException("QredexConfig must not be null.");
+        }
+        return new Qredex(config);
+    }
+
+    /**
      * Creates a {@link Builder} for explicit SDK configuration.
+     *
+     * <p>Convenience alternative to {@link #init(QredexConfig)} — delegates to
+     * {@link QredexConfig.Builder} and produces the same result:
      *
      * <pre>{@code
      * Qredex qredex = Qredex.builder()
@@ -117,8 +145,15 @@ public final class Qredex {
      *   <li>{@code QREDEX_SCOPE} — space-separated OAuth scope string (optional)</li>
      * </ul>
      *
+     * <p>Delegates to {@link #init(QredexConfig)} after resolving and validating the environment:
+     *
+     * <pre>{@code
+     * // In your app, set env vars and call:
+     * Qredex qredex = Qredex.bootstrap();
+     * }</pre>
+     *
      * @return a fully configured {@link Qredex} client
-     * @throws QredexConfigurationException if required environment variables are missing
+     * @throws QredexConfigurationException if required environment variables are missing or invalid
      */
     public static Qredex bootstrap() {
         String clientId = System.getenv("QREDEX_CLIENT_ID");
@@ -144,7 +179,7 @@ public final class Qredex {
             configBuilder.scope(scope.trim());
         }
 
-        return new Qredex(configBuilder.build());
+        return init(configBuilder.build());
     }
 
     // -------------------------------------------------------------------------

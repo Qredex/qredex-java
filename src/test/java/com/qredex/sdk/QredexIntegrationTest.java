@@ -96,6 +96,50 @@ class QredexIntegrationTest {
     }
 
     // -------------------------------------------------------------------------
+    // Init / bootstrap patterns
+    // -------------------------------------------------------------------------
+
+    @Test
+    void init_withConfig_works() {
+        QredexConfig config = QredexConfig.builder()
+            .clientId("test-client-id")
+            .clientSecret("test-client-secret")
+            .baseUrl("http://localhost:" + wireMock.port())
+            .build();
+
+        Qredex client = Qredex.init(config);
+        assertThat(client).isNotNull();
+        assertThat(client.getConfig().getClientId()).isEqualTo("test-client-id");
+    }
+
+    @Test
+    void init_nullConfig_throwsConfigurationException() {
+        assertThatThrownBy(() -> Qredex.init(null))
+            .isInstanceOf(QredexConfigurationException.class);
+    }
+
+    @Test
+    void builder_andInit_produceEquivalentClients() {
+        QredexConfig config = QredexConfig.builder()
+            .clientId("test-client-id")
+            .clientSecret("test-client-secret")
+            .baseUrl("http://localhost:" + wireMock.port())
+            .build();
+
+        Qredex viaInit    = Qredex.init(config);
+        Qredex viaBuilder = Qredex.builder()
+            .clientId("test-client-id")
+            .clientSecret("test-client-secret")
+            .baseUrl("http://localhost:" + wireMock.port())
+            .build();
+
+        assertThat(viaInit.getConfig().getClientId())
+            .isEqualTo(viaBuilder.getConfig().getClientId());
+        assertThat(viaInit.getConfig().getBaseUrl())
+            .isEqualTo(viaBuilder.getConfig().getBaseUrl());
+    }
+
+    // -------------------------------------------------------------------------
     // Creators
     // -------------------------------------------------------------------------
 
