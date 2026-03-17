@@ -20,7 +20,7 @@
 
     <groupId>com.qredex</groupId>
     <artifactId>sdk</artifactId>
-    <version>1.0.0</version>
+    <version>0.1.0</version>
     <packaging>jar</packaging>
 
     <name>Qredex Java Server SDK</name>
