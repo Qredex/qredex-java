@@ -393,3 +393,9 @@ It does **not** include:
 ## License
 
 [Apache-2.0](LICENSE)
+
+## Qredex Contact
+
+- Website: https://qredex.com
+- X: https://x.com/qredex
+- Email: os@qredex.com

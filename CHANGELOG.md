@@ -28,3 +28,6 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - `QredexLogger` interface for sanitized diagnostic logging
 - WireMock-based test suite (31 tests)
 - Integration guide, error reference, and canonical flow examples
+
+### Fixed
+- Standardized license headers across all 75 Java source files to use the full canonical Apache-2.0 header with ASCII art logo and complete license text

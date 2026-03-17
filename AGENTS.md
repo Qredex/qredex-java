@@ -527,7 +527,7 @@ Not for:
 **ALL created files MUST include the official Qredex Apache-2.0 header used in this repository:**
 
 ```java
-/**
+/*
  *    ▄▄▄▄
  *  ▄█▀▀███▄▄              █▄
  *  ██    ██ ▄             ██
@@ -554,3 +554,26 @@ Not for:
 **This applies to:** `.java`, `.md`, `.yaml`, `.yml`, `.json`, `.xml` (Maven) — ALL files.
 
 **Note:** If you create a new file, add this header at the top. If you modify an existing file without the header, add it.
+
+### License Header Enforcement
+
+As of March 2026, all 75 Java source files in this repository have been standardized to use the full canonical license header. This includes:
+
+- Core SDK files (`Qredex.java`, `QredexConfig.java`, `QredexEnvironment.java`, `QredexLogger.java`)
+- Exception classes (10 files)
+- Internal plumbing files (7 files)
+- Request model files (9 files)
+- Response model files (16 files)
+- Standards enum files (11 files)
+- Resource client files (5 files)
+- Example files (7 files)
+- Test files (2 files)
+
+**Verification:** Before closing any work that modifies or creates Java files, verify the license header is present and complete. A quick check:
+
+```bash
+# Files missing the full header will show up in this search
+grep -L "DO NOT ALTER OR REMOVE COPYRIGHT NOTICES" src/**/*.java examples/*.java
+```
+
+If any files appear in the output, they need to be updated with the full canonical header.
