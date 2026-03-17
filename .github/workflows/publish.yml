@@ -1,0 +1,84 @@
+# Copyright (C) 2026 — 2026, Qredex, LTD. All Rights Reserved.
+# Licensed under the Apache License, Version 2.0.
+
+name: Publish to Maven Central
+
+on:
+  workflow_run:
+    workflows:
+      - Create release tag
+    types:
+      - completed
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      release_ref:
+        description: "Release tag to publish (e.g., v0.1.0)"
+        required: false
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    steps:
+      - name: Resolve release tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.release_ref }}" ]; then
+            TAG="${{ github.event.inputs.release_ref }}"
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            TAG="${{ github.ref_name }}"
+          else
+            TAG=$(git describe --tags --abbrev=0)
+          fi
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "Publishing tag: $TAG"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.tag.outputs.tag }}
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: temurin
+          cache: maven
+
+      - name: Verify version match
+        run: |
+          POM_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          TAG_VERSION="${{ steps.tag.outputs.tag }}"
+          TAG_VERSION="${TAG_VERSION#v}"  # strip v prefix
+          if [ "$POM_VERSION" != "$TAG_VERSION" ]; then
+            echo "Error: pom.xml version ($POM_VERSION) != tag version ($TAG_VERSION)"
+            exit 1
+          fi
+          echo "✓ Version match confirmed: $POM_VERSION"
+
+      - name: Run release checks
+        run: mvn clean verify
+
+      - name: Publish to Maven Central
+        if: false  # TODO: Enable when Maven Central credentials configured
+        run: |
+          echo "TODO: Configure GPG and Maven Central credentials"
+          echo "See: https://central.sonatype.org/publish/publish-maven/"
+          # mvn deploy -P release
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.tag.outputs.tag }}" \
+            --title "Release ${{ steps.tag.outputs.tag }}" \
+            --generate-notes \
+            --verify-tag
+          echo "✓ Created GitHub Release: ${{ steps.tag.outputs.tag }}"
