@@ -6,6 +6,7 @@ package com.qredex.sdk.model.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.qredex.sdk.exceptions.QredexValidationException;
 
 /**
  * Request body for issuing an Influence Intent Token (IIT) via the Integrations API.
@@ -99,7 +100,7 @@ public final class IssueInfluenceIntentTokenRequest {
 
         public IssueInfluenceIntentTokenRequest build() {
             if (linkId == null || linkId.trim().isEmpty())
-                throw new IllegalStateException("IssueInfluenceIntentTokenRequest requires linkId.");
+                throw new QredexValidationException("IssueInfluenceIntentTokenRequest requires linkId.");
             return new IssueInfluenceIntentTokenRequest(this);
         }
     }

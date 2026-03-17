@@ -6,6 +6,7 @@ package com.qredex.sdk.model.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.qredex.sdk.exceptions.QredexValidationException;
 import java.util.Map;
 
 /**
@@ -71,7 +72,7 @@ public final class CreateCreatorRequest {
 
         public CreateCreatorRequest build() {
             if (handle == null || handle.trim().isEmpty()) {
-                throw new IllegalStateException("CreateCreatorRequest requires a non-blank handle.");
+                throw new QredexValidationException("CreateCreatorRequest requires a non-blank handle.");
             }
             return new CreateCreatorRequest(this);
         }

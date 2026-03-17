@@ -6,6 +6,7 @@ package com.qredex.sdk.model.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.qredex.sdk.exceptions.QredexValidationException;
 
 /**
  * Request body for locking a Purchase Intent Token (PIT) via the authenticated Integrations API.
@@ -62,7 +63,7 @@ public final class LockPurchaseIntentRequest {
 
         public LockPurchaseIntentRequest build() {
             if (token == null || token.trim().isEmpty())
-                throw new IllegalStateException("LockPurchaseIntentRequest requires a token.");
+                throw new QredexValidationException("LockPurchaseIntentRequest requires a token.");
             return new LockPurchaseIntentRequest(this);
         }
     }

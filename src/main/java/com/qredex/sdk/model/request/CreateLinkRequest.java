@@ -6,6 +6,7 @@ package com.qredex.sdk.model.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.qredex.sdk.exceptions.QredexValidationException;
 import com.qredex.sdk.model.enums.LinkStatus;
 
 /**
@@ -117,13 +118,13 @@ public final class CreateLinkRequest {
 
         public CreateLinkRequest build() {
             if (storeId == null || storeId.trim().isEmpty())
-                throw new IllegalStateException("CreateLinkRequest requires storeId.");
+                throw new QredexValidationException("CreateLinkRequest requires storeId.");
             if (creatorId == null || creatorId.trim().isEmpty())
-                throw new IllegalStateException("CreateLinkRequest requires creatorId.");
+                throw new QredexValidationException("CreateLinkRequest requires creatorId.");
             if (linkName == null || linkName.trim().isEmpty())
-                throw new IllegalStateException("CreateLinkRequest requires linkName.");
+                throw new QredexValidationException("CreateLinkRequest requires linkName.");
             if (destinationPath == null || destinationPath.trim().isEmpty())
-                throw new IllegalStateException("CreateLinkRequest requires destinationPath.");
+                throw new QredexValidationException("CreateLinkRequest requires destinationPath.");
             return new CreateLinkRequest(this);
         }
     }

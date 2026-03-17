@@ -189,7 +189,7 @@ class QredexIntegrationTest {
     @Test
     void creators_create_validationError() {
         assertThatThrownBy(() -> CreateCreatorRequest.builder().build())
-            .isInstanceOf(IllegalStateException.class)
+            .isInstanceOf(QredexValidationException.class)
             .hasMessageContaining("handle");
     }
 
@@ -291,7 +291,7 @@ class QredexIntegrationTest {
         stubTokenEndpoint();
         assertThatThrownBy(() -> qredex.intents().issueInfluenceIntentToken(
                 IssueInfluenceIntentTokenRequest.builder().linkId("").build()))
-            .isInstanceOf(IllegalStateException.class);
+            .isInstanceOf(QredexValidationException.class);
     }
 
     // -------------------------------------------------------------------------
