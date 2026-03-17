@@ -26,6 +26,6 @@ public enum OriginMatchStatus {
         for (OriginMatchStatus s : values()) {
             if (s.value.equalsIgnoreCase(value)) return s;
         }
-        throw new IllegalArgumentException("Unknown OriginMatchStatus: " + value);
+        return UNKNOWN;
     }
 }

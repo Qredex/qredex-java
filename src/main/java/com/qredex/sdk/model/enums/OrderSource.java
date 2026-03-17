@@ -10,7 +10,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /** Canonical source of an ingested order. */
 public enum OrderSource {
     SHOPIFY("SHOPIFY"),
-    DIRECT_API("DIRECT_API");
+    DIRECT_API("DIRECT_API"),
+
+    /** Forward-compatible sentinel for values added after this SDK version. */
+    UNKNOWN("UNKNOWN");
 
     private final String value;
 
@@ -24,6 +27,6 @@ public enum OrderSource {
         for (OrderSource s : values()) {
             if (s.value.equalsIgnoreCase(value)) return s;
         }
-        throw new IllegalArgumentException("Unknown OrderSource: " + value);
+        return UNKNOWN;
     }
 }

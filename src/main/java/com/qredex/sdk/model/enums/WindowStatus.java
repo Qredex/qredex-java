@@ -25,6 +25,6 @@ public enum WindowStatus {
         for (WindowStatus s : values()) {
             if (s.value.equalsIgnoreCase(value)) return s;
         }
-        throw new IllegalArgumentException("Unknown WindowStatus: " + value);
+        return UNKNOWN;
     }
 }

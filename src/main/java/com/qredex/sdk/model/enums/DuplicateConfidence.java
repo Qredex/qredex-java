@@ -11,7 +11,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum DuplicateConfidence {
     LOW("LOW"),
     MEDIUM("MEDIUM"),
-    HIGH("HIGH");
+    HIGH("HIGH"),
+
+    /** Forward-compatible sentinel for values added after this SDK version. */
+    UNKNOWN("UNKNOWN");
 
     private final String value;
 
@@ -25,6 +28,6 @@ public enum DuplicateConfidence {
         for (DuplicateConfidence s : values()) {
             if (s.value.equalsIgnoreCase(value)) return s;
         }
-        throw new IllegalArgumentException("Unknown DuplicateConfidence: " + value);
+        return UNKNOWN;
     }
 }

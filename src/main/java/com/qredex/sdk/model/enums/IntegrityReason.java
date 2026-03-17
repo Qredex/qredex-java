@@ -15,7 +15,10 @@ public enum IntegrityReason {
     MISMATCHED("MISMATCHED"),
     REPLACED("REPLACED"),
     LINK_INACTIVE("LINK_INACTIVE"),
-    CREATOR_INACTIVE("CREATOR_INACTIVE");
+    CREATOR_INACTIVE("CREATOR_INACTIVE"),
+
+    /** Forward-compatible sentinel for values added after this SDK version. */
+    UNKNOWN("UNKNOWN");
 
     private final String value;
 
@@ -29,6 +32,6 @@ public enum IntegrityReason {
         for (IntegrityReason s : values()) {
             if (s.value.equalsIgnoreCase(value)) return s;
         }
-        throw new IllegalArgumentException("Unknown IntegrityReason: " + value);
+        return UNKNOWN;
     }
 }

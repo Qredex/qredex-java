@@ -10,7 +10,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /** Status of a Qredex influence link. */
 public enum LinkStatus {
     ACTIVE("ACTIVE"),
-    DISABLED("DISABLED");
+    DISABLED("DISABLED"),
+
+    /** Forward-compatible sentinel for values added after this SDK version. */
+    UNKNOWN("UNKNOWN");
 
     private final String value;
 
@@ -24,6 +27,6 @@ public enum LinkStatus {
         for (LinkStatus s : values()) {
             if (s.value.equalsIgnoreCase(value)) return s;
         }
-        throw new IllegalArgumentException("Unknown LinkStatus: " + value);
+        return UNKNOWN;
     }
 }

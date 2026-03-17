@@ -10,7 +10,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /** Integrity verdict for a Purchase Intent Token (PIT). */
 public enum TokenIntegrity {
     VALID("VALID"),
-    INVALID("INVALID");
+    INVALID("INVALID"),
+
+    /** Forward-compatible sentinel for values added after this SDK version. */
+    UNKNOWN("UNKNOWN");
 
     private final String value;
 
@@ -24,6 +27,6 @@ public enum TokenIntegrity {
         for (TokenIntegrity s : values()) {
             if (s.value.equalsIgnoreCase(value)) return s;
         }
-        throw new IllegalArgumentException("Unknown TokenIntegrity: " + value);
+        return UNKNOWN;
     }
 }

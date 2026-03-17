@@ -12,7 +12,10 @@ public enum IntegrityBand {
     HIGH("HIGH"),
     MEDIUM("MEDIUM"),
     LOW("LOW"),
-    CRITICAL("CRITICAL");
+    CRITICAL("CRITICAL"),
+
+    /** Forward-compatible sentinel for values added after this SDK version. */
+    UNKNOWN("UNKNOWN");
 
     private final String value;
 
@@ -26,6 +29,6 @@ public enum IntegrityBand {
         for (IntegrityBand s : values()) {
             if (s.value.equalsIgnoreCase(value)) return s;
         }
-        throw new IllegalArgumentException("Unknown IntegrityBand: " + value);
+        return UNKNOWN;
     }
 }

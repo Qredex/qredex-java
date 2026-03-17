@@ -12,7 +12,10 @@ public enum DuplicateReason {
     EXACT_EXTERNAL_ORDER_ID("EXACT_EXTERNAL_ORDER_ID"),
     CHECKOUT_TOKEN_MATCH("CHECKOUT_TOKEN_MATCH"),
     CUSTOMER_EMAIL_HASH_MATCH("CUSTOMER_EMAIL_HASH_MATCH"),
-    AMOUNT_TIME_MATCH("AMOUNT_TIME_MATCH");
+    AMOUNT_TIME_MATCH("AMOUNT_TIME_MATCH"),
+
+    /** Forward-compatible sentinel for values added after this SDK version. */
+    UNKNOWN("UNKNOWN");
 
     private final String value;
 
@@ -26,6 +29,6 @@ public enum DuplicateReason {
         for (DuplicateReason s : values()) {
             if (s.value.equalsIgnoreCase(value)) return s;
         }
-        throw new IllegalArgumentException("Unknown DuplicateReason: " + value);
+        return UNKNOWN;
     }
 }
