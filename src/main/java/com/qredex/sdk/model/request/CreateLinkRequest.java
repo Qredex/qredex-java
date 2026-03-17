@@ -7,7 +7,7 @@ package com.qredex.sdk.model.request;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.qredex.sdk.exceptions.QredexValidationException;
-import com.qredex.sdk.model.enums.LinkStatus;
+import com.qredex.sdk.model.standards.LinkStatus;
 
 /**
  * Request body for creating a new Qredex influence link.

@@ -44,7 +44,6 @@ public final class LinksClient {
      * @return the created {@link LinkResponse}
      */
     public LinkResponse create(CreateLinkRequest request) {
-        if (request == null) throw new QredexValidationException("CreateLinkRequest must not be null.");
         return transport.post(
             "/api/v1/integrations/links",
             request,

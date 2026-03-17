@@ -6,7 +6,7 @@ package com.qredex.sdk.model.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.qredex.sdk.model.enums.*;
+import com.qredex.sdk.model.standards.*;
 import java.util.List;
 
 /** Attribution integrity score breakdown, nested inside {@link OrderAttributionDetailsResponse}. */

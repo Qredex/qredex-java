@@ -6,8 +6,8 @@ package com.qredex.sdk.model.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.qredex.sdk.model.enums.OriginMatchStatus;
-import com.qredex.sdk.model.enums.WindowStatus;
+import com.qredex.sdk.model.standards.OriginMatchStatus;
+import com.qredex.sdk.model.standards.WindowStatus;
 
 /**
  * Purchase Intent Token (PIT) response from the authenticated Integrations lock endpoint.

@@ -53,16 +53,6 @@ public final class OrdersClient {
      * @return the {@link OrderAttributionResponse} with resolution and integrity signals
      */
     public OrderAttributionResponse recordPaidOrder(RecordPaidOrderRequest request) {
-        if (request == null) throw new QredexValidationException("RecordPaidOrderRequest must not be null.");
-        if (request.getStoreId() == null || request.getStoreId().trim().isEmpty()) {
-            throw new QredexValidationException("RecordPaidOrderRequest requires storeId.");
-        }
-        if (request.getExternalOrderId() == null || request.getExternalOrderId().trim().isEmpty()) {
-            throw new QredexValidationException("RecordPaidOrderRequest requires externalOrderId.");
-        }
-        if (request.getCurrency() == null || request.getCurrency().trim().isEmpty()) {
-            throw new QredexValidationException("RecordPaidOrderRequest requires currency.");
-        }
         return transport.post(
             "/api/v1/integrations/orders/paid",
             request,

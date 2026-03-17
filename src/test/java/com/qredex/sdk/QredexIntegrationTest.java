@@ -8,7 +8,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.qredex.sdk.exceptions.*;
-import com.qredex.sdk.model.enums.ResolutionStatus;
+import com.qredex.sdk.model.standards.*;
 import com.qredex.sdk.model.request.*;
 import com.qredex.sdk.model.response.*;
 import org.junit.jupiter.api.*;
@@ -566,5 +566,261 @@ class QredexIntegrationTest {
                "\"integrity_band\":\"HIGH\",\"review_required\":false,\"duplicate_suspect\":false," +
                "\"order_source\":\"DIRECT_API\",\"created_at\":\"2026-03-17T00:00:00Z\"," +
                "\"updated_at\":\"2026-03-17T00:00:00Z\"}";
+    }
+
+    // -------------------------------------------------------------------------
+    // QredexScope enum
+    // -------------------------------------------------------------------------
+
+    @Test
+    void scope_join_single() {
+        assertThat(QredexScope.join(QredexScope.API)).isEqualTo("direct:api");
+    }
+
+    @Test
+    void scope_join_multiple() {
+        String joined = QredexScope.join(
+            QredexScope.LINKS_WRITE, QredexScope.INTENTS_WRITE, QredexScope.ORDERS_WRITE);
+        assertThat(joined).isEqualTo("direct:links:write direct:intents:write direct:orders:write");
+    }
+
+    @Test
+    void scope_join_empty_returnsNull() {
+        assertThat(QredexScope.join()).isNull();
+    }
+
+    @Test
+    void scope_fromValue() {
+        assertThat(QredexScope.fromValue("direct:api")).isEqualTo(QredexScope.API);
+        assertThat(QredexScope.fromValue("direct:orders:write")).isEqualTo(QredexScope.ORDERS_WRITE);
+    }
+
+    @Test
+    void scope_enum_inBuilder() {
+        Qredex client = Qredex.builder()
+            .clientId("test-id")
+            .clientSecret("test-secret")
+            .baseUrl("http://localhost:" + wireMock.port())
+            .scopes(QredexScope.ORDERS_WRITE, QredexScope.INTENTS_WRITE)
+            .build();
+        assertThat(client.getConfig().getScope())
+            .isEqualTo("direct:orders:write direct:intents:write");
+    }
+
+    // -------------------------------------------------------------------------
+    // Forward-compatible enum deserialization
+    // -------------------------------------------------------------------------
+
+    @Test
+    void enum_unknownResolutionStatus_deserializesToUnknown() {
+        stubTokenEndpoint();
+        stubFor(post(urlEqualTo("/api/v1/integrations/orders/paid"))
+            .willReturn(aResponse()
+                .withStatus(201)
+                .withHeader("Content-Type", "application/json")
+                .withBody("{\"id\":\"o1\",\"external_order_id\":\"order-100\",\"currency\":\"USD\"," +
+                          "\"resolution_status\":\"FUTURE_VALUE\",\"integrity_score\":50," +
+                          "\"integrity_band\":\"FUTURE_BAND\",\"review_required\":false," +
+                          "\"duplicate_suspect\":false,\"order_source\":\"FUTURE_SOURCE\"," +
+                          "\"created_at\":\"2026-03-17T00:00:00Z\",\"updated_at\":\"2026-03-17T00:00:00Z\"}")));
+
+        OrderAttributionResponse order = qredex.orders().recordPaidOrder(
+            RecordPaidOrderRequest.builder()
+                .storeId("store-uuid")
+                .externalOrderId("order-100")
+                .currency("USD")
+                .build());
+
+        assertThat(order.getResolutionStatus()).isEqualTo(ResolutionStatus.UNKNOWN);
+        assertThat(order.getIntegrityBand()).isEqualTo(IntegrityBand.UNKNOWN);
+        assertThat(order.getOrderSource()).isEqualTo(OrderSource.UNKNOWN);
+    }
+
+    @Test
+    void enum_unknownCreatorStatus_deserializesToUnknown() {
+        stubTokenEndpoint();
+        stubFor(get(urlEqualTo("/api/v1/integrations/creators/c1"))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody("{\"id\":\"c1\",\"handle\":\"alice\",\"status\":\"SUSPENDED\"," +
+                          "\"created_at\":\"2026-03-17T00:00:00Z\",\"updated_at\":\"2026-03-17T00:00:00Z\"}")));
+
+        CreatorResponse response = qredex.creators().get("c1");
+        assertThat(response.getStatus()).isEqualTo(CreatorStatus.UNKNOWN);
+    }
+
+    // -------------------------------------------------------------------------
+    // Token expiry → automatic refresh
+    // -------------------------------------------------------------------------
+
+    @Test
+    void auth_expiredToken_triggersRefresh() {
+        // Issue a token with 1-second expiry (below 30s refresh window → expires immediately)
+        stubFor(post(urlEqualTo("/api/v1/auth/token"))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody("{\"access_token\":\"token-1\",\"token_type\":\"Bearer\"," +
+                          "\"expires_in\":1,\"scope\":\"direct:api\"}")));
+
+        stubFor(get(urlPathEqualTo("/api/v1/integrations/creators"))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody("{\"items\":[],\"page\":0,\"size\":20,\"total_elements\":0,\"total_pages\":0}")));
+
+        // First call — acquires token
+        qredex.creators().list(null);
+        // Second call — token with 1s expiry is already past the 30s refresh window, so re-fetches
+        qredex.creators().list(null);
+
+        // Token endpoint should have been called twice (expired → refreshed)
+        verify(2, postRequestedFor(urlEqualTo("/api/v1/auth/token")));
+    }
+
+    // -------------------------------------------------------------------------
+    // Canonical end-to-end flow: IIT → PIT → order → refund
+    // -------------------------------------------------------------------------
+
+    @Test
+    void canonicalFlow_iitToPitToOrderToRefund() {
+        stubTokenEndpoint();
+
+        // Stub IIT issuance
+        stubFor(post(urlEqualTo("/api/v1/integrations/intents/token"))
+            .willReturn(aResponse()
+                .withStatus(201)
+                .withHeader("Content-Type", "application/json")
+                .withBody("{\"id\":\"iit1\",\"link_id\":\"l1\",\"token\":\"iit-token-abc\"," +
+                          "\"token_id\":\"tid1\",\"issued_at\":\"2026-03-17T00:00:00Z\"," +
+                          "\"expires_at\":\"2026-03-17T01:00:00Z\",\"status\":\"ACTIVE\"," +
+                          "\"integrity_version\":2}")));
+
+        // Stub PIT lock
+        stubFor(post(urlEqualTo("/api/v1/integrations/intents/lock"))
+            .willReturn(aResponse()
+                .withStatus(201)
+                .withHeader("Content-Type", "application/json")
+                .withBody("{\"id\":\"pit1\",\"token\":\"pit-token-xyz\",\"token_id\":\"tid2\"," +
+                          "\"issued_at\":\"2026-03-17T00:00:00Z\"," +
+                          "\"expires_at\":\"2026-03-17T01:00:00Z\"," +
+                          "\"store_domain_snapshot\":\"shop.example.com\"," +
+                          "\"integrity_version\":2,\"eligible\":true," +
+                          "\"window_status\":\"WITHIN\",\"origin_match_status\":\"MATCH\"}")));
+
+        // Stub paid order
+        stubFor(post(urlEqualTo("/api/v1/integrations/orders/paid"))
+            .willReturn(aResponse()
+                .withStatus(201)
+                .withHeader("Content-Type", "application/json")
+                .withBody(orderAttributionJson("oa1", "ATTRIBUTED"))));
+
+        // Stub refund
+        stubFor(post(urlEqualTo("/api/v1/integrations/orders/refund"))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(orderAttributionJson("oa1", "ATTRIBUTED"))));
+
+        // --- Execute canonical flow ---
+
+        // Step 1: Issue IIT
+        InfluenceIntentResponse iit = qredex.intents().issueInfluenceIntentToken(
+            IssueInfluenceIntentTokenRequest.builder()
+                .linkId("l1")
+                .landingPath("/products/spring")
+                .build());
+        assertThat(iit.getToken()).isEqualTo("iit-token-abc");
+
+        // Step 2: Lock PIT using IIT token
+        PurchaseIntentResponse pit = qredex.intents().lockPurchaseIntent(
+            LockPurchaseIntentRequest.builder()
+                .token(iit.getToken())
+                .source("backend-cart")
+                .build());
+        assertThat(pit.getToken()).isEqualTo("pit-token-xyz");
+        assertThat(pit.getEligible()).isTrue();
+        assertThat(pit.getWindowStatus()).isEqualTo(WindowStatus.WITHIN);
+
+        // Step 3: Record paid order with PIT
+        OrderAttributionResponse order = qredex.orders().recordPaidOrder(
+            RecordPaidOrderRequest.builder()
+                .storeId("store-uuid")
+                .externalOrderId("order-e2e-1")
+                .currency("USD")
+                .totalPrice(99.99)
+                .purchaseIntentToken(pit.getToken())
+                .build());
+        assertThat(order.getResolutionStatus()).isEqualTo(ResolutionStatus.ATTRIBUTED);
+
+        // Step 4: Record refund
+        OrderAttributionResponse refund = qredex.refunds().recordRefund(
+            RecordRefundRequest.builder()
+                .storeId("store-uuid")
+                .externalOrderId("order-e2e-1")
+                .externalRefundId("refund-e2e-1")
+                .refundTotal(99.99)
+                .build());
+        assertThat(refund.getId()).isEqualTo("oa1");
+    }
+
+    // -------------------------------------------------------------------------
+    // Closeable
+    // -------------------------------------------------------------------------
+
+    @Test
+    void close_doesNotThrow() {
+        Qredex client = Qredex.builder()
+            .clientId("test-id")
+            .clientSecret("test-secret")
+            .baseUrl("http://localhost:" + wireMock.port())
+            .build();
+        assertThatCode(client::close).doesNotThrowAnyException();
+    }
+
+    // -------------------------------------------------------------------------
+    // Builder validation — all builders now throw QredexValidationException
+    // -------------------------------------------------------------------------
+
+    @Test
+    void builders_throwQredexValidationException() {
+        assertThatThrownBy(() -> CreateCreatorRequest.builder().build())
+            .isInstanceOf(QredexValidationException.class);
+        assertThatThrownBy(() -> CreateLinkRequest.builder()
+                .storeId("s").creatorId("c").linkName("n").build())
+            .isInstanceOf(QredexValidationException.class);
+        assertThatThrownBy(() -> IssueInfluenceIntentTokenRequest.builder().build())
+            .isInstanceOf(QredexValidationException.class);
+        assertThatThrownBy(() -> LockPurchaseIntentRequest.builder().build())
+            .isInstanceOf(QredexValidationException.class);
+        assertThatThrownBy(() -> RecordPaidOrderRequest.builder()
+                .storeId("s").externalOrderId("o").build())
+            .isInstanceOf(QredexValidationException.class);
+        assertThatThrownBy(() -> RecordRefundRequest.builder()
+                .storeId("s").externalOrderId("o").build())
+            .isInstanceOf(QredexValidationException.class);
+    }
+
+    // -------------------------------------------------------------------------
+    // toString coverage
+    // -------------------------------------------------------------------------
+
+    @Test
+    void toString_requestAndResponse_notDefault() {
+        CreateCreatorRequest req = CreateCreatorRequest.builder()
+            .handle("alice").displayName("Alice").build();
+        assertThat(req.toString()).contains("alice");
+
+        // Verify response toString after deserialization
+        stubTokenEndpoint();
+        stubFor(get(urlEqualTo("/api/v1/integrations/creators/c1"))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(creatorJson("c1", "alice"))));
+
+        CreatorResponse resp = qredex.creators().get("c1");
+        assertThat(resp.toString()).contains("c1").contains("alice");
     }
 }

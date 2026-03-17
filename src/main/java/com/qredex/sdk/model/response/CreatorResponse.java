@@ -6,7 +6,7 @@ package com.qredex.sdk.model.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.qredex.sdk.model.enums.CreatorStatus;
+import com.qredex.sdk.model.standards.CreatorStatus;
 import java.util.Map;
 
 /** Full creator resource response. */

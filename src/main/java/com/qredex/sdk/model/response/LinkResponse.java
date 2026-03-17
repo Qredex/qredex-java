@@ -6,7 +6,7 @@ package com.qredex.sdk.model.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.qredex.sdk.model.enums.LinkStatus;
+import com.qredex.sdk.model.standards.LinkStatus;
 
 /** Full influence link resource response. */
 @JsonIgnoreProperties(ignoreUnknown = true)

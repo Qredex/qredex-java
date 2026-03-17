@@ -25,12 +25,15 @@ package com.qredex.sdk;
 import com.qredex.sdk.exceptions.QredexConfigurationException;
 import com.qredex.sdk.internal.HttpTransport;
 import com.qredex.sdk.internal.TokenProvider;
+import com.qredex.sdk.model.standards.QredexScope;
 import com.qredex.sdk.model.response.OAuthTokenResponse;
 import com.qredex.sdk.resources.CreatorsClient;
 import com.qredex.sdk.resources.IntentsClient;
 import com.qredex.sdk.resources.LinksClient;
 import com.qredex.sdk.resources.OrdersClient;
 import com.qredex.sdk.resources.RefundsClient;
+
+import java.io.Closeable;
 
 /**
  * Main entrypoint for the Qredex Java server SDK.
@@ -68,9 +71,10 @@ import com.qredex.sdk.resources.RefundsClient;
  * <p>This SDK covers the <strong>Integrations API only</strong>. It does not include
  * the Merchant dashboard API, internal admin API, or browser agent behavior.
  */
-public final class Qredex {
+public final class Qredex implements Closeable {
 
     private final QredexConfig config;
+    private final HttpTransport transport;
 
     private final QredexAuthClient auth;
     private final CreatorsClient creators;
@@ -82,6 +86,7 @@ public final class Qredex {
     private Qredex(QredexConfig config) {
         this.config = config;
         HttpTransport transport = new HttpTransport(config);
+        this.transport = transport;
         TokenProvider tokenProvider = new TokenProvider(config, transport);
 
         this.auth = new QredexAuthClient(tokenProvider);
@@ -212,6 +217,17 @@ public final class Qredex {
     /** Returns the resolved configuration for this client instance. */
     public QredexConfig getConfig() { return config; }
 
+    /**
+     * Releases the underlying HTTP connection pool and dispatcher threads.
+     *
+     * <p>Call this when disposing of the client in tests, CLI tools, or short-lived processes.
+     * In long-running server processes where the client is a singleton, calling this is optional.
+     */
+    @Override
+    public void close() {
+        transport.close();
+    }
+
     // -------------------------------------------------------------------------
     // Builder
     // -------------------------------------------------------------------------
@@ -235,6 +251,9 @@ public final class Qredex {
 
         /** Optional OAuth scope. Defaults to server-side scope for your credentials. */
         public Builder scope(String scope) { configBuilder.scope(scope); return this; }
+
+        /** Sets OAuth scopes from typed enum values. */
+        public Builder scopes(QredexScope... scopes) { configBuilder.scopes(scopes); return this; }
 
         /** API environment. Defaults to {@link QredexEnvironment#PRODUCTION}. */
         public Builder environment(QredexEnvironment environment) { configBuilder.environment(environment); return this; }

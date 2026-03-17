@@ -5,6 +5,7 @@
 package com.qredex.sdk;
 
 import com.qredex.sdk.exceptions.QredexConfigurationException;
+import com.qredex.sdk.model.standards.QredexScope;
 
 /**
  * Immutable configuration for the {@link Qredex} client.
@@ -106,6 +107,9 @@ public final class QredexConfig {
 
         /** Optional OAuth scope. Defaults to server-side scope for your client credentials. */
         public Builder scope(String scope) { this.scope = scope; return this; }
+
+        /** Sets OAuth scopes from typed enum values. Replaces any previous scope string. */
+        public Builder scopes(QredexScope... scopes) { this.scope = QredexScope.join(scopes); return this; }
 
         /** API environment. Defaults to {@link QredexEnvironment#PRODUCTION}. */
         public Builder environment(QredexEnvironment environment) { this.environment = environment; return this; }

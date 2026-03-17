@@ -12,7 +12,6 @@
  */
 package com.qredex.sdk.resources;
 
-import com.qredex.sdk.exceptions.QredexValidationException;
 import com.qredex.sdk.internal.HttpTransport;
 import com.qredex.sdk.internal.TokenProvider;
 import com.qredex.sdk.model.request.RecordRefundRequest;
@@ -44,16 +43,6 @@ public final class RefundsClient {
      * @return the updated {@link OrderAttributionResponse}
      */
     public OrderAttributionResponse recordRefund(RecordRefundRequest request) {
-        if (request == null) throw new QredexValidationException("RecordRefundRequest must not be null.");
-        if (request.getStoreId() == null || request.getStoreId().trim().isEmpty()) {
-            throw new QredexValidationException("RecordRefundRequest requires storeId.");
-        }
-        if (request.getExternalOrderId() == null || request.getExternalOrderId().trim().isEmpty()) {
-            throw new QredexValidationException("RecordRefundRequest requires externalOrderId.");
-        }
-        if (request.getExternalRefundId() == null || request.getExternalRefundId().trim().isEmpty()) {
-            throw new QredexValidationException("RecordRefundRequest requires externalRefundId.");
-        }
         return transport.post(
             "/api/v1/integrations/orders/refund",
             request,

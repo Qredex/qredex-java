@@ -44,10 +44,6 @@ public final class CreatorsClient {
      * @throws QredexValidationException if the request is invalid
      */
     public CreatorResponse create(CreateCreatorRequest request) {
-        if (request == null) throw new QredexValidationException("CreateCreatorRequest must not be null.");
-        if (request.getHandle() == null || request.getHandle().trim().isEmpty()) {
-            throw new QredexValidationException("CreateCreatorRequest requires a non-blank handle.");
-        }
         return transport.post(
             "/api/v1/integrations/creators",
             request,

@@ -6,7 +6,7 @@ package com.qredex.sdk.model.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.qredex.sdk.model.enums.*;
+import com.qredex.sdk.model.standards.*;
 
 /**
  * Order attribution record returned after a paid order is recorded or when listing orders.

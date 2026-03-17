@@ -4,7 +4,7 @@
  */
 package com.qredex.sdk.model.request;
 
-import com.qredex.sdk.model.enums.LinkStatus;
+import com.qredex.sdk.model.standards.LinkStatus;
 
 /**
  * Query parameters for listing influence links with optional filters and pagination.

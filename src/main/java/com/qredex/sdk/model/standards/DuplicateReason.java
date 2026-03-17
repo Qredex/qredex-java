@@ -2,7 +2,7 @@
  *  Copyright (C) 2026 — 2026, Qredex, LTD. All Rights Reserved.
  *  Licensed under the Apache License, Version 2.0.
  */
-package com.qredex.sdk.model.enums;
+package com.qredex.sdk.model.standards;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

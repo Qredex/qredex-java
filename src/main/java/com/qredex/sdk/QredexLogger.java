@@ -31,4 +31,12 @@ public interface QredexLogger {
     void info(String message);
     void warn(String message);
     void error(String message);
+
+    /**
+     * Logs an error message with a cause. Override this to pass stack traces to your logger.
+     * The default implementation delegates to {@link #error(String)}.
+     */
+    default void error(String message, Throwable cause) {
+        error(message);
+    }
 }

@@ -12,7 +12,6 @@
  */
 package com.qredex.sdk.resources;
 
-import com.qredex.sdk.exceptions.QredexValidationException;
 import com.qredex.sdk.internal.HttpTransport;
 import com.qredex.sdk.internal.TokenProvider;
 import com.qredex.sdk.model.request.IssueInfluenceIntentTokenRequest;
@@ -53,10 +52,6 @@ public final class IntentsClient {
      * @return the {@link InfluenceIntentResponse} containing the IIT {@code token}
      */
     public InfluenceIntentResponse issueInfluenceIntentToken(IssueInfluenceIntentTokenRequest request) {
-        if (request == null) throw new QredexValidationException("IssueInfluenceIntentTokenRequest must not be null.");
-        if (request.getLinkId() == null || request.getLinkId().trim().isEmpty()) {
-            throw new QredexValidationException("IssueInfluenceIntentTokenRequest requires linkId.");
-        }
         return transport.post(
             "/api/v1/integrations/intents/token",
             request,
@@ -75,10 +70,6 @@ public final class IntentsClient {
      * @return the {@link PurchaseIntentResponse}
      */
     public PurchaseIntentResponse lockPurchaseIntent(LockPurchaseIntentRequest request) {
-        if (request == null) throw new QredexValidationException("LockPurchaseIntentRequest must not be null.");
-        if (request.getToken() == null || request.getToken().trim().isEmpty()) {
-            throw new QredexValidationException("LockPurchaseIntentRequest requires a token.");
-        }
         return transport.post(
             "/api/v1/integrations/intents/lock",
             request,

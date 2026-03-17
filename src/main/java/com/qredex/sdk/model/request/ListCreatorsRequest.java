@@ -4,7 +4,7 @@
  */
 package com.qredex.sdk.model.request;
 
-import com.qredex.sdk.model.enums.CreatorStatus;
+import com.qredex.sdk.model.standards.CreatorStatus;
 
 /**
  * Query parameters for listing creators with optional pagination and status filter.

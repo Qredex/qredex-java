@@ -76,7 +76,11 @@ public final class HttpTransport {
 
     /** Executes an authenticated JSON GET request with optional query parameters. */
     public <T> T get(String path, Map<String, String> query, String bearerToken, Class<T> responseType) {
-        HttpUrl.Builder urlBuilder = HttpUrl.parse(baseUrl + path).newBuilder();
+        HttpUrl parsed = HttpUrl.parse(baseUrl + path);
+        if (parsed == null) {
+            throw new QredexNetworkException("Invalid URL: " + baseUrl + path);
+        }
+        HttpUrl.Builder urlBuilder = parsed.newBuilder();
         if (query != null) {
             for (Map.Entry<String, String> entry : query.entrySet()) {
                 if (entry.getValue() != null) {
@@ -95,6 +99,12 @@ public final class HttpTransport {
 
         log("GET " + path);
         return execute(request, responseType);
+    }
+
+    /** Shuts down the HTTP client's connection pool and dispatcher. */
+    public void close() {
+        httpClient.dispatcher().executorService().shutdown();
+        httpClient.connectionPool().evictAll();
     }
 
     /** Executes an authenticated JSON POST request. */

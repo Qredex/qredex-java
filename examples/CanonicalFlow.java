@@ -13,7 +13,7 @@
 package examples;
 
 import com.qredex.sdk.Qredex;
-import com.qredex.sdk.model.enums.ResolutionStatus;
+import com.qredex.sdk.model.standards.ResolutionStatus;
 import com.qredex.sdk.model.request.*;
 import com.qredex.sdk.model.response.*;
 
