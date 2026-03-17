@@ -26,7 +26,11 @@ import com.qredex.sdk.exceptions.QredexConfigurationException;
 import com.qredex.sdk.internal.HttpTransport;
 import com.qredex.sdk.internal.TokenProvider;
 import com.qredex.sdk.model.response.OAuthTokenResponse;
-import com.qredex.sdk.resources.*;
+import com.qredex.sdk.resources.CreatorsClient;
+import com.qredex.sdk.resources.IntentsClient;
+import com.qredex.sdk.resources.LinksClient;
+import com.qredex.sdk.resources.OrdersClient;
+import com.qredex.sdk.resources.RefundsClient;
 
 /**
  * Main entrypoint for the Qredex Java server SDK.
@@ -67,8 +71,6 @@ import com.qredex.sdk.resources.*;
 public final class Qredex {
 
     private final QredexConfig config;
-    private final HttpTransport transport;
-    private final TokenProvider tokenProvider;
 
     private final QredexAuthClient auth;
     private final CreatorsClient creators;
@@ -79,8 +81,8 @@ public final class Qredex {
 
     private Qredex(QredexConfig config) {
         this.config = config;
-        this.transport = new HttpTransport(config);
-        this.tokenProvider = new TokenProvider(config, transport);
+        HttpTransport transport = new HttpTransport(config);
+        TokenProvider tokenProvider = new TokenProvider(config, transport);
 
         this.auth = new QredexAuthClient(tokenProvider);
         this.creators = new CreatorsClient(transport, tokenProvider);
