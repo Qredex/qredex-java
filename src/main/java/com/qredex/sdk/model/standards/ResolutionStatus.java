@@ -15,7 +15,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum ResolutionStatus {
     ATTRIBUTED("ATTRIBUTED"),
     UNATTRIBUTED("UNATTRIBUTED"),
-    REJECTED("REJECTED");
+    REJECTED("REJECTED"),
+
+    /** Forward-compatible sentinel for values added after this SDK version. */
+    UNKNOWN("UNKNOWN");
 
     private final String value;
 
@@ -29,6 +32,6 @@ public enum ResolutionStatus {
         for (ResolutionStatus s : values()) {
             if (s.value.equalsIgnoreCase(value)) return s;
         }
-        throw new IllegalArgumentException("Unknown ResolutionStatus: " + value);
+        return UNKNOWN;
     }
 }

@@ -1,0 +1,36 @@
+/*
+ *    ▄▄▄▄
+ *  ▄█▀▀███▄▄              █▄
+ *  ██    ██ ▄             ██
+ *  ██    ██ ████▄▄█▀█▄ ▄████ ▄█▀█▄▀██ ██▀
+ *  ██  ▄ ██ ██   ██▄█▀ ██ ██ ██▄█▀  ███
+ *   ▀█████▄▄█▀  ▄▀█▄▄▄▄█▀███▄▀█▄▄▄▄██ ██▄
+ *        ▀█
+ *
+ *  Copyright (C) 2026 — 2026, Qredex, LTD. All Rights Reserved.
+ *
+ *  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ *  Licensed under the Apache License, Version 2.0. See LICENSE for the full license text.
+ *  You may not use this file except in compliance with that License.
+ *  Unless required by applicable law or agreed to in writing, software distributed under the
+ *  License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ *  either express or implied. See the License for the specific language governing permissions
+ *  and limitations under the License.
+ *
+ *  If you need additional information or have any questions, please email: copyright@qredex.com
+ */
+
+/**
+ * Internal implementation details for the Qredex Java SDK.
+ *
+ * <p><strong>This package is not part of the public API.</strong>
+ * All classes in this package are internal implementation details and may change
+ * without notice between SDK versions. Do not depend on them directly.
+ *
+ * <p>Use the public API surface through {@link com.qredex.sdk.Qredex} and the
+ * resource clients it exposes.
+ *
+ * @hidden
+ */
+package com.qredex.sdk.internal;

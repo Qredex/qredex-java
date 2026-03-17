@@ -51,7 +51,7 @@ Canonical Java server SDK for Qredex machine-to-machine integrations.
 **Gradle:**
 
 ```groovy
-implementation 'com.qredex:sdk:1.0.0'
+implementation 'com.qredex:sdk:0.1.0'
 ```
 
 ## Quick Start
@@ -178,6 +178,22 @@ qredex.auth().clearTokenCache();
 
 Use `QREDEX_ENVIRONMENT` only when you need `staging` or `development`. Most integrations can omit it.
 
+## Scopes
+
+The SDK supports typed scope enums for explicit permission control:
+
+```java
+Qredex qredex = Qredex.builder()
+    .clientId("...")
+    .clientSecret("...")
+    .scopes(QredexScope.LINKS_WRITE, QredexScope.INTENTS_WRITE, QredexScope.ORDERS_WRITE)
+    .build();
+```
+
+When no scope is specified, the server assigns the default scope for your client credentials. Most integrations can omit explicit scopes.
+
+Available scopes: `API`, `LINKS_READ`, `LINKS_WRITE`, `CREATORS_READ`, `CREATORS_WRITE`, `ORDERS_READ`, `ORDERS_WRITE`, `INTENTS_READ`, `INTENTS_WRITE`.
+
 ## Configuration Options
 
 | Option | Default | Description |
@@ -189,6 +205,7 @@ Use `QREDEX_ENVIRONMENT` only when you need `staging` or `development`. Most int
 | `timeoutMs` | `10000` | HTTP timeout in milliseconds |
 | `maxAuthRetries` | `3` | Retry attempts for auth token issuance |
 | `userAgentSuffix` | `null` | Appended to the `User-Agent` header |
+| `scope` / `scopes` | `null` | OAuth scope — accepts a raw string or typed `QredexScope` enum values |
 | `logger` | `null` | `QredexLogger` implementation for diagnostic logging |
 
 ## Auth
@@ -208,22 +225,27 @@ qredex.auth().clearTokenCache();
 
 ## Idempotency
 
-Pass an idempotency key on write operations for safe replay:
+Qredex write operations achieve idempotency through stable external identifiers:
+
+- **Paid orders** are idempotent on `(store_id, external_order_id)`.
+- **Refunds** are idempotent on `(store_id, external_refund_id)`.
+
+Safe to retry on timeout — submitting the same external IDs produces an `IDEMPOTENT` decision (HTTP 200), not a duplicate.
 
 ```java
-// RecordPaidOrderRequest and RecordRefundRequest both carry idempotencyKey
+// Safe to retry: same (store_id, external_order_id) is idempotent
 RecordPaidOrderRequest request = RecordPaidOrderRequest.builder()
     .storeId(storeId)
-    .externalOrderId("order-100045")
+    .externalOrderId("order-100045")  // stable external ID = idempotency key
     .currency("USD")
     .totalPrice(110.00)
-    .idempotencyKey("order-100045-v1")
+    .purchaseIntentToken(pitToken)
     .build();
 
 qredex.orders().recordPaidOrder(request);
 ```
 
-Use deterministic keys derived from your external order or refund identifiers. Stable external IDs are always preferred over adding write retries.
+Use stable, deterministic external IDs from your platform. Do not generate random IDs per retry attempt.
 
 ## Retry Behavior
 
