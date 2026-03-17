@@ -22,9 +22,9 @@
  */
 package examples;
 
-import com.qredex.sdk.Qredex;
-import com.qredex.sdk.model.request.IssueInfluenceIntentTokenRequest;
-import com.qredex.sdk.model.response.InfluenceIntentResponse;
+import com.qredex.Qredex;
+import com.qredex.model.request.IssueInfluenceIntentTokenRequest;
+import com.qredex.model.response.InfluenceIntentResponse;
 
 public final class IssueIit {
 

@@ -12,10 +12,10 @@
  */
 package examples;
 
-import com.qredex.sdk.Qredex;
-import com.qredex.sdk.model.standards.ResolutionStatus;
-import com.qredex.sdk.model.request.*;
-import com.qredex.sdk.model.response.*;
+import com.qredex.Qredex;
+import com.qredex.model.standards.ResolutionStatus;
+import com.qredex.model.request.*;
+import com.qredex.model.response.*;
 
 /**
  * End-to-end Qredex SDK usage examples.

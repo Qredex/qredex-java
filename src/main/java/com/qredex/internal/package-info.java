@@ -20,24 +20,17 @@
  *
  *  If you need additional information or have any questions, please email: copyright@qredex.com
  */
-package examples;
 
-import com.qredex.Qredex;
-import com.qredex.model.request.LockPurchaseIntentRequest;
-import com.qredex.model.response.PurchaseIntentResponse;
-
-public final class LockPit {
-
-    public static void main(String[] args) {
-        Qredex qredex = Qredex.bootstrap();
-
-        // QREDEX_IIT_TOKEN is the token string returned by issueInfluenceIntentToken
-        PurchaseIntentResponse pit = qredex.intents().lockPurchaseIntent(
-            LockPurchaseIntentRequest.builder()
-                .token(System.getenv("QREDEX_IIT_TOKEN"))
-                .source("backend-cart")
-                .build());
-
-        System.out.println(pit);
-    }
-}
+/**
+ * Internal implementation details for the Qredex Java SDK.
+ *
+ * <p><strong>This package is not part of the public API.</strong>
+ * All classes in this package are internal implementation details and may change
+ * without notice between SDK versions. Do not depend on them directly.
+ *
+ * <p>Use the public API surface through {@link com.qredex.Qredex} and the
+ * resource clients it exposes.
+ *
+ * @hidden
+ */
+package com.qredex.internal;

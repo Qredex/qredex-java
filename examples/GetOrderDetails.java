@@ -22,8 +22,8 @@
  */
 package examples;
 
-import com.qredex.sdk.Qredex;
-import com.qredex.sdk.model.response.OrderAttributionDetailsResponse;
+import com.qredex.Qredex;
+import com.qredex.model.response.OrderAttributionDetailsResponse;
 
 public final class GetOrderDetails {
 

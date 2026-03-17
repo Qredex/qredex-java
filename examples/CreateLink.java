@@ -22,9 +22,9 @@
  */
 package examples;
 
-import com.qredex.sdk.Qredex;
-import com.qredex.sdk.model.request.CreateLinkRequest;
-import com.qredex.sdk.model.response.LinkResponse;
+import com.qredex.Qredex;
+import com.qredex.model.request.CreateLinkRequest;
+import com.qredex.model.response.LinkResponse;
 
 public final class CreateLink {
 

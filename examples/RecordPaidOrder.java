@@ -22,9 +22,9 @@
  */
 package examples;
 
-import com.qredex.sdk.Qredex;
-import com.qredex.sdk.model.request.RecordPaidOrderRequest;
-import com.qredex.sdk.model.response.OrderAttributionResponse;
+import com.qredex.Qredex;
+import com.qredex.model.request.RecordPaidOrderRequest;
+import com.qredex.model.response.OrderAttributionResponse;
 
 public final class RecordPaidOrder {
 

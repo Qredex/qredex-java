@@ -22,16 +22,16 @@
  */
 package examples;
 
-import com.qredex.sdk.Qredex;
-import com.qredex.sdk.model.request.CreateCreatorRequest;
-import com.qredex.sdk.model.response.CreatorResponse;
-import com.qredex.sdk.model.response.OAuthTokenResponse;
+import com.qredex.Qredex;
+import com.qredex.model.request.CreateCreatorRequest;
+import com.qredex.model.response.CreatorResponse;
+import com.qredex.model.response.OAuthTokenResponse;
 
 public final class AuthAndCreateCreator {
 
     public static void main(String[] args) {
         Qredex qredex = Qredex.init(
-            com.qredex.sdk.QredexConfig.builder()
+            com.qredex.QredexConfig.builder()
                 .clientId(System.getenv("QREDEX_CLIENT_ID"))
                 .clientSecret(System.getenv("QREDEX_CLIENT_SECRET"))
                 .build()

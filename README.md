@@ -21,7 +21,7 @@
    If you need additional information or have any questions, please email: copyright@qredex.com
 -->
 
-# Qredex Java SDK
+# `@qredex/java`
 
 [![CI](https://github.com/Qredex/qredex-java/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Qredex/qredex-java/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
@@ -43,7 +43,7 @@ Canonical Java server SDK for Qredex machine-to-machine integrations.
 ```xml
 <dependency>
     <groupId>com.qredex</groupId>
-    <artifactId>sdk</artifactId>
+    <artifactId>qredex-java</artifactId>
     <version>0.1.0</version>
 </dependency>
 ```
@@ -51,7 +51,7 @@ Canonical Java server SDK for Qredex machine-to-machine integrations.
 **Gradle:**
 
 ```groovy
-implementation 'com.qredex:sdk:0.1.0'
+implementation 'com.qredex:qredex-java:0.1.0'
 ```
 
 ## Quick Start
@@ -69,7 +69,7 @@ Optional:
 Then initialize the client:
 
 ```java
-import com.qredex.sdk.Qredex;
+import com.qredex.Qredex;
 
 // Environment bootstrap — reads QREDEX_CLIENT_ID and QREDEX_CLIENT_SECRET
 Qredex qredex = Qredex.bootstrap();
@@ -257,7 +257,7 @@ Use stable, deterministic external IDs from your platform. Do not generate rando
 ## Error Handling
 
 ```java
-import com.qredex.sdk.exceptions.*;
+import com.qredex.exceptions.*;
 
 try {
     qredex.orders().recordPaidOrder(request);
