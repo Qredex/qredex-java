@@ -213,18 +213,18 @@ If a solution feels hacky, overly magical, or hard to explain to users of the SD
 
 ## Package / Layer Rules
 
-- `src/main/java/com/qredex/sdk/Qredex.java` → top-level SDK entrypoint and composition root (`Qredex.builder()`, `Qredex.bootstrap()`)
-- `src/main/java/com/qredex/sdk/resources/` → resource-specific operation clients (`CreatorsClient`, `LinksClient`, `IntentsClient`, `OrdersClient`, `RefundsClient`)
-- `src/main/java/com/qredex/sdk/internal/` → private plumbing not part of the public API (`HttpTransport`, `TokenProvider`, `ApiErrorFactory`, `JsonMapper`, `CachedToken`, `QueryParams`, `QredexUserAgent`)
-- `src/main/java/com/qredex/sdk/exceptions/` → typed exception hierarchy (`QredexException` base, `QredexApiException`, `QredexAuthenticationException`, `QredexAuthorizationException`, `QredexValidationException`, `QredexNotFoundException`, `QredexConflictException`, `QredexRateLimitException`, `QredexNetworkException`, `QredexConfigurationException`)
-- `src/main/java/com/qredex/sdk/model/request/` → typed request input objects (`CreateCreatorRequest`, `CreateLinkRequest`, `IssueInfluenceIntentTokenRequest`, `LockPurchaseIntentRequest`, `RecordPaidOrderRequest`, `RecordRefundRequest`, `ListCreatorsRequest`, `ListLinksRequest`, `ListOrdersRequest`)
-- `src/main/java/com/qredex/sdk/model/response/` → typed API response objects (`CreatorResponse`, `CreatorPageResponse`, `LinkResponse`, `LinkPageResponse`, `LinkStatsResponse`, `InfluenceIntentResponse`, `PurchaseIntentResponse`, `OrderAttributionResponse`, `OrderAttributionPageResponse`, `OrderAttributionDetailsResponse`, `OAuthTokenResponse`, etc.)
-- `src/main/java/com/qredex/sdk/model/enums/` → canonical Qredex enums (`CreatorStatus`, `LinkStatus`, `ResolutionStatus`, `TokenIntegrity`, `IntegrityReason`, `IntegrityBand`, `OriginMatchStatus`, `WindowStatus`, `OrderSource`, `DuplicateConfidence`, `DuplicateReason`)
-- `src/main/java/com/qredex/sdk/QredexConfig.java` → immutable SDK configuration with builder
-- `src/main/java/com/qredex/sdk/QredexEnvironment.java` → environment enum (`PRODUCTION`, `STAGING`, `DEVELOPMENT`)
-- `src/main/java/com/qredex/sdk/QredexLogger.java` → minimal logger interface
+- `src/main/java/com/qredex/Qredex.java` → top-level SDK entrypoint and composition root (`Qredex.builder()`, `Qredex.bootstrap()`, `Qredex.init(config)`); implements `Closeable` — call `close()` in tests or short-lived processes to release the HTTP connection pool
+- `src/main/java/com/qredex/resources/` → resource-specific operation clients (`CreatorsClient`, `LinksClient`, `IntentsClient`, `OrdersClient`, `RefundsClient`)
+- `src/main/java/com/qredex/internal/` → private plumbing not part of the public API (`HttpTransport`, `TokenProvider`, `ApiErrorFactory`, `JsonMapper`, `CachedToken`, `QueryParams`, `QredexUserAgent`)
+- `src/main/java/com/qredex/exceptions/` → typed exception hierarchy (`QredexException` base, `QredexApiException`, `QredexAuthenticationException`, `QredexAuthorizationException`, `QredexValidationException`, `QredexNotFoundException`, `QredexConflictException`, `QredexRateLimitException`, `QredexNetworkException`, `QredexConfigurationException`)
+- `src/main/java/com/qredex/model/request/` → typed request input objects (`CreateCreatorRequest`, `CreateLinkRequest`, `IssueInfluenceIntentTokenRequest`, `LockPurchaseIntentRequest`, `RecordPaidOrderRequest`, `RecordRefundRequest`, `ListCreatorsRequest`, `ListLinksRequest`, `ListOrdersRequest`)
+- `src/main/java/com/qredex/model/response/` → typed API response objects (`CreatorResponse`, `CreatorPageResponse`, `CreatorListResponse`, `LinkResponse`, `LinkPageResponse`, `LinkListResponse`, `LinkStatsResponse`, `InfluenceIntentResponse`, `PurchaseIntentResponse`, `OrderAttributionResponse`, `OrderAttributionPageResponse`, `OrderAttributionDetailsResponse`, `OrderAttributionScoreBreakdownResponse`, `OrderAttributionTimelineEventResponse`, `OAuthTokenResponse`, `ApiErrorResponse`)
+- `src/main/java/com/qredex/model/standards/` → canonical Qredex enums (`CreatorStatus`, `LinkStatus`, `ResolutionStatus`, `TokenIntegrity`, `IntegrityReason`, `IntegrityBand`, `OriginMatchStatus`, `WindowStatus`, `OrderSource`, `DuplicateConfidence`, `DuplicateReason`, `QredexScope`)
+- `src/main/java/com/qredex/QredexConfig.java` → immutable SDK configuration with builder
+- `src/main/java/com/qredex/QredexEnvironment.java` → environment enum (`PRODUCTION`, `STAGING`, `DEVELOPMENT`)
+- `src/main/java/com/qredex/QredexLogger.java` → minimal logger interface
 - `examples/` → canonical usage only (end-to-end IIT → PIT → order → refund flow)
-- `src/test/java/com/qredex/sdk/` → WireMock-based integration tests
+- `src/test/java/com/qredex/` → WireMock-based integration tests
 - `docs/` → package-specific docs (`INTEGRATION_GUIDE.md`, `ERRORS.md`), not alternate platform truth
 
 ## Naming Rules
@@ -250,11 +250,14 @@ If a solution feels hacky, overly magical, or hard to explain to users of the SD
 
 ### Good direction
 
-- `Qredex.init(config)` or `Qredex.builder().fromEnv().build()`
+- `Qredex.init(config)` or `Qredex.bootstrap()` or `Qredex.builder()....build()`
 - `qredex.creators().create(...)`
 - `qredex.links().create(...)`
 - `qredex.intents().issueInfluenceIntentToken(...)`
 - `qredex.orders().getDetails(...)`
+- `qredex.auth().issueToken()` / `qredex.auth().clearTokenCache()` — explicit token control (advanced use only; auth is automatic by default)
+- `Qredex.builder().scopes(QredexScope.CREATORS_READ, QredexScope.LINKS_WRITE)` — typed scope enum; or `.scope("...")` for raw string
+- `qredex.close()` — release connection pool in tests or short-lived processes (`Qredex implements Closeable`)
 
 ### Bad direction
 
