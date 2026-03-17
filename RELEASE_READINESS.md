@@ -136,14 +136,22 @@ Developer                   GitHub Actions
     ↓
 [3] git commit + push
     ↓                            ↓
-                        [4] release.yml detects version change
-                            - Creates tag v0.2.0
+                        [4] release.yml checks version change
+                            - Compares current vs previous pom.xml version
+                            - Only proceeds if version actually changed
+                            - Checks if tag v0.2.0 already exists
+                            - Creates tag v0.2.0 if new
                             ↓
                         [5] publish.yml triggered by tag
                             - Runs mvn clean verify
                             - Publishes to Maven Central (when configured)
                             - Creates GitHub Release
 ```
+
+**Tag Creation Logic:**
+- ✅ Creates tag **only if** version in pom.xml changed from previous commit
+- ✅ Skips creation if tag already exists
+- ✅ Won't create duplicate tags on non-version pushes to pom.xml
 
 ### Live Testing
 ```bash
