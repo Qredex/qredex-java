@@ -438,6 +438,37 @@ class QredexIntegrationTest {
     }
 
     @Test
+    void orders_recordPaidOrder_callOptions_headersAreSent() {
+        stubTokenEndpoint();
+        stubFor(post(urlEqualTo("/api/v1/integrations/orders/paid"))
+            .willReturn(aResponse()
+                .withStatus(201)
+                .withHeader("Content-Type", "application/json")
+                .withBody(orderAttributionJson("oa-call-options", "ATTRIBUTED"))));
+
+        OrderAttributionResponse order = qredex.orders().recordPaidOrder(
+            RecordPaidOrderRequest.builder()
+                .storeId("store-uuid")
+                .externalOrderId("order-call-options")
+                .currency("USD")
+                .totalPrice(110.00)
+                .build(),
+            QredexCallOptions.builder()
+                .requestId("req-java-sdk")
+                .traceId("trace-java-sdk")
+                .idempotencyKey("order-call-options-v1")
+                .header("X-Qredex-Client", "java-test")
+                .build());
+
+        assertThat(order.getId()).isEqualTo("oa-call-options");
+        verify(postRequestedFor(urlEqualTo("/api/v1/integrations/orders/paid"))
+            .withHeader("X-Request-Id", equalTo("req-java-sdk"))
+            .withHeader("X-Trace-Id", equalTo("trace-java-sdk"))
+            .withHeader("Idempotency-Key", equalTo("order-call-options-v1"))
+            .withHeader("x-qredex-client", equalTo("java-test")));
+    }
+
+    @Test
     void orders_list_withoutRequest_happy() {
         stubTokenEndpoint();
         stubFor(get(urlPathEqualTo("/api/v1/integrations/orders"))
@@ -967,6 +998,9 @@ class QredexIntegrationTest {
         assertThatThrownBy(() -> RecordRefundRequest.builder()
                 .storeId("s").externalOrderId("o").build())
             .isInstanceOf(QredexValidationException.class);
+        assertThatThrownBy(() -> QredexCallOptions.builder().header("Authorization", "Bearer x"))
+            .isInstanceOf(QredexValidationException.class)
+            .hasMessageContaining("reserved");
     }
 
     // -------------------------------------------------------------------------

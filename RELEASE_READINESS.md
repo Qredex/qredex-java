@@ -35,16 +35,16 @@ The Qredex Java SDK has undergone comprehensive infrastructure-grade hardening a
 - ✅ Javadoc on all public API
 - ✅ 9 runnable examples covering canonical flow
 
-### Public Project Infrastructure (100%)
+### Public Project Infrastructure (90%)
 - ✅ LICENSE (Apache 2.0)
 - ✅ SECURITY.md with vulnerability reporting
 - ✅ CONTRIBUTING.md with development guidelines
 - ✅ .gitignore
 - ✅ CI workflow (Java 8/11/17/21 matrix)
 - ✅ Release workflow (auto-tagging)
-- ✅ Publish workflow (Maven Central + GitHub releases)
+- ⚠️ Release-tag validation workflow is present, but Maven Central deployment is not configured in `pom.xml` yet
 
-### Maven Central Readiness (90%)
+### Maven Central Readiness (60%)
 - ✅ pom.xml metadata complete (scm, developers, organization, issueManagement)
 - ✅ Apache 2.0 license declared
 - ✅ Source and Javadoc JAR generation configured
@@ -52,7 +52,7 @@ The Qredex Java SDK has undergone comprehensive infrastructure-grade hardening a
 - ⚠️ Nexus Staging plugin (requires setup)
 - ⚠️ Maven Central credentials (requires setup)
 
-**Note:** Maven Central publishing is documented but requires one-time credential setup. The workflow is ready and tested.
+**Note:** Maven Central publishing is not live yet. The release workflow now validates that deployment configuration exists before claiming a publish path.
 
 ### Version Consistency (100%)
 - ✅ pom.xml: 0.1.0
@@ -275,11 +275,11 @@ git push origin main
 #    - Runs CI on Java 8/11/17/21
 #    - Creates GitHub Release with auto-generated notes
 
-# 5. (After Maven Central setup) Publish artifact:
-#    - publish.yml workflow will deploy to Maven Central
+# 5. After Maven Central deployment configuration is committed:
+#    - publish.yml can be used as the release validation and publish path
 ```
 
-**The SDK is production-ready and safe to release publicly.**
+**The SDK is close to public release, but Maven Central deployment still needs to be configured before public installation claims are credible.**
 
 ---
 

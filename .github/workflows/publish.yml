@@ -1,7 +1,7 @@
 # Copyright (C) 2026 — 2026, Qredex, LTD. All Rights Reserved.
 # Licensed under the Apache License, Version 2.0.
 
-name: Publish to Maven Central
+name: Validate Java Release Tag
 
 on:
   workflow_run:
@@ -73,10 +73,11 @@ jobs:
           test -n "${{ secrets.MAVEN_GPG_PRIVATE_KEY }}" || (echo "Missing MAVEN_GPG_PRIVATE_KEY" && exit 1)
           test -n "${{ secrets.MAVEN_GPG_PASSPHRASE }}" || (echo "Missing MAVEN_GPG_PASSPHRASE" && exit 1)
 
-      - name: Publish to Maven Central
+      - name: Verify Maven Central deployment is configured
         run: |
-          echo "Release publishing is gated on a configured Maven Central deployment profile in pom.xml."
-          echo "Credentials are present; enable deploy once the release profile is committed."
+          grep -q "<distributionManagement>" pom.xml || (echo "Missing distributionManagement in pom.xml." && exit 1)
+          grep -q "maven-gpg-plugin" pom.xml || (echo "Missing maven-gpg-plugin in pom.xml." && exit 1)
+          echo "Maven Central deployment configuration detected."
 
       - name: Create GitHub Release
         env:

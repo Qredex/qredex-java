@@ -38,7 +38,18 @@ Canonical Java server SDK for Qredex machine-to-machine integrations.
 
 ## Installation
 
-**Maven:**
+Maven Central publication is not live until the release `pom.xml` includes the deployment profile required by the release workflow.
+Until then, install from a local build:
+
+```bash
+mvn -B clean install
+```
+
+Then consume the artifact from your local Maven repository.
+
+When public publication is enabled, the dependency coordinates will remain:
+
+**Maven coordinates:**
 
 ```xml
 <dependency>
@@ -196,10 +207,10 @@ qredex.auth().clearTokenCache();
 |---|---|---|
 | `QREDEX_CLIENT_ID` | Yes | Integration client ID |
 | `QREDEX_CLIENT_SECRET` | Yes | Integration client secret |
-| `QREDEX_ENVIRONMENT` | No | `production` or `staging` |
+| `QREDEX_ENVIRONMENT` | No | `production`, `staging`, or `development` |
 | `QREDEX_SCOPE` | No | Space-delimited OAuth scope string |
 
-Use `QREDEX_ENVIRONMENT` only when you need `staging`. Most integrations can omit it.
+Use `QREDEX_ENVIRONMENT` only when you need `staging` or `development`. Most integrations can omit it.
 For local testing against a non-Qredex base URL, use `Qredex.builder().baseUrl(...)` instead of treating localhost as a platform environment.
 
 ## Scopes
@@ -270,6 +281,30 @@ qredex.orders().recordPaidOrder(request);
 ```
 
 Use stable, deterministic external IDs from your platform. Do not generate random IDs per retry attempt.
+
+## Per-call Controls
+
+Use `QredexCallOptions` when you need request-scoped operational controls without mutating the shared client:
+
+```java
+OrderAttributionResponse order = qredex.orders().recordPaidOrder(
+    request,
+    QredexCallOptions.builder()
+        .requestId("req-123")
+        .traceId("trace-456")
+        .idempotencyKey("order-100045-v1")
+        .timeoutMs(5_000)
+        .build()
+);
+```
+
+Supported controls:
+
+- `requestId`
+- `traceId`
+- `idempotencyKey`
+- `timeoutMs`
+- additional non-reserved headers via `header(...)`
 
 ## Retry Behavior
 

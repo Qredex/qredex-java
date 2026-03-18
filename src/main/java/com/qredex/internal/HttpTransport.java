@@ -83,7 +83,7 @@ public final class HttpTransport {
             .post(RequestBody.create(FORM, formBody.toString()))
             .build();
 
-        return execute(request, OAuthTokenResponse.class);
+        return execute(request, OAuthTokenResponse.class, null);
     }
 
     /** Executes an authenticated JSON GET request with optional query parameters. */
