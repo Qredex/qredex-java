@@ -25,6 +25,9 @@ package com.qredex.model.response;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.qredex.model.standards.*;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -133,38 +136,68 @@ public final class OrderAttributionDetailsResponse {
     @JsonProperty("updated_at")
     private String updatedAt;
 
+    @Nullable
     public String getId() { return id; }
+    @Nullable
     public OrderSource getOrderSource() { return orderSource; }
+    @Nullable
     public String getExternalOrderId() { return externalOrderId; }
+    @Nullable
     public String getOrderNumber() { return orderNumber; }
+    @Nullable
     public String getPaidAt() { return paidAt; }
+    @Nullable
     public String getCurrency() { return currency; }
+    @Nullable
     public Double getSubtotalPrice() { return subtotalPrice; }
+    @Nullable
     public Double getDiscountTotal() { return discountTotal; }
+    @Nullable
     public Double getTotalPrice() { return totalPrice; }
+    @Nullable
     public String getLinkId() { return linkId; }
+    @Nullable
     public String getLinkName() { return linkName; }
+    @Nullable
     public String getLinkCode() { return linkCode; }
+    @Nullable
     public String getCreatorId() { return creatorId; }
+    @Nullable
     public String getCreatorHandle() { return creatorHandle; }
+    @Nullable
     public String getCreatorDisplayName() { return creatorDisplayName; }
     public boolean isDuplicateSuspect() { return duplicateSuspect; }
+    @Nullable
     public DuplicateConfidence getDuplicateConfidence() { return duplicateConfidence; }
+    @Nullable
     public DuplicateReason getDuplicateReason() { return duplicateReason; }
+    @Nullable
     public String getDuplicateOfOrderAttributionId() { return duplicateOfOrderAttributionId; }
+    @Nullable
     public String getAttributionLockedAt() { return attributionLockedAt; }
+    @Nullable
     public Integer getAttributionWindowDays() { return attributionWindowDays; }
+    @Nullable
     public WindowStatus getWindowStatus() { return windowStatus; }
+    @Nullable
     public TokenIntegrity getTokenIntegrity() { return tokenIntegrity; }
+    @Nullable
     public IntegrityReason getIntegrityReason() { return integrityReason; }
+    @Nullable
     public OriginMatchStatus getOriginMatchStatus() { return originMatchStatus; }
     public int getIntegrityScore() { return integrityScore; }
+    @Nullable
     public IntegrityBand getIntegrityBand() { return integrityBand; }
     public boolean isReviewRequired() { return reviewRequired; }
+    @Nullable
     public OrderAttributionScoreBreakdownResponse getScoreBreakdown() { return scoreBreakdown; }
+    @Nullable
     public ResolutionStatus getResolutionStatus() { return resolutionStatus; }
-    public List<OrderAttributionTimelineEventResponse> getTimeline() { return timeline; }
+    @Nullable
+    public List<OrderAttributionTimelineEventResponse> getTimeline() { return timeline == null ? null : Collections.unmodifiableList(timeline); }
+    @Nullable
     public String getCreatedAt() { return createdAt; }
+    @Nullable
     public String getUpdatedAt() { return updatedAt; }
 
     @Override

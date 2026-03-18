@@ -22,6 +22,7 @@
  */
 package com.qredex.resources;
 
+import com.qredex.QredexCallOptions;
 import com.qredex.exceptions.QredexValidationException;
 import com.qredex.internal.HttpTransport;
 import com.qredex.internal.QueryParams;
@@ -31,6 +32,8 @@ import com.qredex.model.request.RecordPaidOrderRequest;
 import com.qredex.model.response.OrderAttributionDetailsResponse;
 import com.qredex.model.response.OrderAttributionPageResponse;
 import com.qredex.model.response.OrderAttributionResponse;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Order attribution read and paid-order ingestion operations.
@@ -62,12 +65,25 @@ public final class OrdersClient {
      * @param request order details; {@code storeId}, {@code externalOrderId}, and {@code currency} are required
      * @return the {@link OrderAttributionResponse} with resolution and integrity signals
      */
-    public OrderAttributionResponse recordPaidOrder(RecordPaidOrderRequest request) {
+    @NotNull
+    public OrderAttributionResponse recordPaidOrder(@NotNull RecordPaidOrderRequest request) {
+        return recordPaidOrder(request, null);
+    }
+
+    @NotNull
+    public OrderAttributionResponse recordPaidOrder(
+        @NotNull RecordPaidOrderRequest request,
+        @Nullable QredexCallOptions options
+    ) {
+        if (request == null) {
+            throw new QredexValidationException("request must not be null.");
+        }
         return transport.post(
             "/api/v1/integrations/orders/paid",
             request,
             tokenProvider.getAuthorizationHeader(),
-            OrderAttributionResponse.class);
+            OrderAttributionResponse.class,
+            options);
     }
 
     /**
@@ -76,7 +92,18 @@ public final class OrdersClient {
      * @param request pagination params; use {@link ListOrdersRequest#defaults()} for none
      * @return paginated {@link OrderAttributionPageResponse}
      */
-    public OrderAttributionPageResponse list(ListOrdersRequest request) {
+    @NotNull
+    public OrderAttributionPageResponse list() {
+        return list(null, null);
+    }
+
+    @NotNull
+    public OrderAttributionPageResponse list(@Nullable ListOrdersRequest request) {
+        return list(request, null);
+    }
+
+    @NotNull
+    public OrderAttributionPageResponse list(@Nullable ListOrdersRequest request, @Nullable QredexCallOptions options) {
         if (request == null) request = ListOrdersRequest.defaults();
         return transport.get(
             "/api/v1/integrations/orders",
@@ -85,7 +112,8 @@ public final class OrdersClient {
                 .add("size", request.getSize())
                 .build(),
             tokenProvider.getAuthorizationHeader(),
-            OrderAttributionPageResponse.class);
+            OrderAttributionPageResponse.class,
+            options);
     }
 
     /**
@@ -96,7 +124,16 @@ public final class OrdersClient {
      * @param orderAttributionId the UUID of the order attribution record
      * @return the {@link OrderAttributionDetailsResponse}
      */
-    public OrderAttributionDetailsResponse getDetails(String orderAttributionId) {
+    @NotNull
+    public OrderAttributionDetailsResponse getDetails(@Nullable String orderAttributionId) {
+        return getDetails(orderAttributionId, null);
+    }
+
+    @NotNull
+    public OrderAttributionDetailsResponse getDetails(
+        @Nullable String orderAttributionId,
+        @Nullable QredexCallOptions options
+    ) {
         if (orderAttributionId == null || orderAttributionId.trim().isEmpty()) {
             throw new QredexValidationException("orderAttributionId must not be blank.");
         }
@@ -104,7 +141,8 @@ public final class OrdersClient {
             "/api/v1/integrations/orders/" + encode(orderAttributionId) + "/details",
             null,
             tokenProvider.getAuthorizationHeader(),
-            OrderAttributionDetailsResponse.class);
+            OrderAttributionDetailsResponse.class,
+            options);
     }
 
     private static String encode(String value) {

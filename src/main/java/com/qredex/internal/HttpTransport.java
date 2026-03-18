@@ -22,6 +22,7 @@
  */
 package com.qredex.internal;
 
+import com.qredex.QredexCallOptions;
 import com.qredex.QredexConfig;
 import com.qredex.QredexLogger;
 import com.qredex.exceptions.QredexNetworkException;
@@ -46,6 +47,7 @@ public final class HttpTransport {
     private static final String HEADER_REQUEST_ID = "X-Request-Id";
     private static final String HEADER_TRACE_ID   = "X-Trace-Id";
     private static final String HEADER_RETRY_AFTER = "Retry-After";
+    private static final String HEADER_IDEMPOTENCY_KEY = "Idempotency-Key";
 
     private final OkHttpClient httpClient;
     private final String baseUrl;
@@ -86,6 +88,11 @@ public final class HttpTransport {
 
     /** Executes an authenticated JSON GET request with optional query parameters. */
     public <T> T get(String path, Map<String, String> query, String bearerToken, Class<T> responseType) {
+        return get(path, query, bearerToken, responseType, null);
+    }
+
+    /** Executes an authenticated JSON GET request with optional query parameters and request options. */
+    public <T> T get(String path, Map<String, String> query, String bearerToken, Class<T> responseType, QredexCallOptions options) {
         HttpUrl parsed = HttpUrl.parse(baseUrl + path);
         if (parsed == null) {
             throw new QredexNetworkException("Invalid URL: " + baseUrl + path);
@@ -107,8 +114,10 @@ public final class HttpTransport {
             .get()
             .build();
 
+        request = applyCallOptions(request, options);
+
         log("GET " + path);
-        return execute(request, responseType);
+        return execute(request, responseType, options);
     }
 
     /** Shuts down the HTTP client's connection pool and dispatcher. */
@@ -119,6 +128,11 @@ public final class HttpTransport {
 
     /** Executes an authenticated JSON POST request. */
     public <T> T post(String path, Object body, String bearerToken, Class<T> responseType) {
+        return post(path, body, bearerToken, responseType, null);
+    }
+
+    /** Executes an authenticated JSON POST request with optional request controls. */
+    public <T> T post(String path, Object body, String bearerToken, Class<T> responseType, QredexCallOptions options) {
         try {
             String json = JsonMapper.INSTANCE.writeValueAsString(body);
             Request request = new Request.Builder()
@@ -129,15 +143,25 @@ public final class HttpTransport {
                 .post(RequestBody.create(JSON, json))
                 .build();
 
+            request = applyCallOptions(request, options);
+
             log("POST " + path);
-            return execute(request, responseType);
+            return execute(request, responseType, options);
         } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
             throw new QredexNetworkException("Failed to serialize request body: " + e.getMessage(), e);
         }
     }
 
-    private <T> T execute(Request request, Class<T> responseType) {
-        try (Response response = httpClient.newCall(request).execute()) {
+    private <T> T execute(Request request, Class<T> responseType, QredexCallOptions options) {
+        OkHttpClient client = httpClient;
+        if (options != null && options.getTimeoutMs() != null) {
+            client = httpClient.newBuilder()
+                .connectTimeout(options.getTimeoutMs(), TimeUnit.MILLISECONDS)
+                .readTimeout(options.getTimeoutMs(), TimeUnit.MILLISECONDS)
+                .writeTimeout(options.getTimeoutMs(), TimeUnit.MILLISECONDS)
+                .build();
+        }
+        try (Response response = client.newCall(request).execute()) {
             String requestId = response.header(HEADER_REQUEST_ID);
             String traceId   = response.header(HEADER_TRACE_ID);
             ResponseBody responseBody = response.body();
@@ -148,7 +172,9 @@ public final class HttpTransport {
 
             if (response.isSuccessful()) {
                 if (body.isEmpty()) {
-                    return null;
+                    throw new QredexNetworkException(
+                        "Received empty response body for " + request.method() + " " + request.url().encodedPath()
+                            + " when " + responseType.getSimpleName() + " was expected.");
                 }
                 try {
                     return JsonMapper.INSTANCE.readValue(body, responseType);
@@ -181,6 +207,26 @@ public final class HttpTransport {
             if (status >= 400) logger.warn(msg);
             else logger.debug(msg);
         }
+    }
+
+    private Request applyCallOptions(Request request, QredexCallOptions options) {
+        if (options == null) {
+            return request;
+        }
+        Request.Builder builder = request.newBuilder();
+        if (options.getRequestId() != null) {
+            builder.header(HEADER_REQUEST_ID, options.getRequestId());
+        }
+        if (options.getTraceId() != null) {
+            builder.header(HEADER_TRACE_ID, options.getTraceId());
+        }
+        if (options.getIdempotencyKey() != null) {
+            builder.header(HEADER_IDEMPOTENCY_KEY, options.getIdempotencyKey());
+        }
+        for (Map.Entry<String, String> entry : options.getHeaders().entrySet()) {
+            builder.header(entry.getKey(), entry.getValue());
+        }
+        return builder.build();
     }
 
     private static Long parseRetryAfter(String value) {

@@ -66,12 +66,17 @@ jobs:
       - name: Run release checks
         run: mvn clean verify
 
-      - name: Publish to Maven Central
-        if: false  # TODO: Enable when Maven Central credentials configured
+      - name: Check release credentials
         run: |
-          echo "TODO: Configure GPG and Maven Central credentials"
-          echo "See: https://central.sonatype.org/publish/publish-maven/"
-          # mvn deploy -P release
+          test -n "${{ secrets.MAVEN_CENTRAL_USERNAME }}" || (echo "Missing MAVEN_CENTRAL_USERNAME" && exit 1)
+          test -n "${{ secrets.MAVEN_CENTRAL_PASSWORD }}" || (echo "Missing MAVEN_CENTRAL_PASSWORD" && exit 1)
+          test -n "${{ secrets.MAVEN_GPG_PRIVATE_KEY }}" || (echo "Missing MAVEN_GPG_PRIVATE_KEY" && exit 1)
+          test -n "${{ secrets.MAVEN_GPG_PASSPHRASE }}" || (echo "Missing MAVEN_GPG_PASSPHRASE" && exit 1)
+
+      - name: Publish to Maven Central
+        run: |
+          echo "Release publishing is gated on a configured Maven Central deployment profile in pom.xml."
+          echo "Credentials are present; enable deploy once the release profile is committed."
 
       - name: Create GitHub Release
         env:

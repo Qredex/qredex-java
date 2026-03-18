@@ -33,7 +33,7 @@ public enum QredexEnvironment {
     /** Staging environment at {@code https://staging-api.qredex.com}. */
     STAGING("https://staging-api.qredex.com"),
 
-    /** Local development server at {@code http://localhost:8080}. */
+    /** Local test-only override target at {@code http://localhost:8080}. Not a hosted Qredex environment. */
     DEVELOPMENT("http://localhost:8080");
 
     private final String defaultBaseUrl;

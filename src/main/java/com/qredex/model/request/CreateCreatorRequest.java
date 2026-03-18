@@ -25,6 +25,11 @@ package com.qredex.model.request;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.qredex.exceptions.QredexValidationException;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -58,14 +63,21 @@ public final class CreateCreatorRequest {
         this.handle = builder.handle;
         this.displayName = builder.displayName;
         this.email = builder.email;
-        this.socials = builder.socials;
+        this.socials = builder.socials == null
+            ? null
+            : Collections.unmodifiableMap(new LinkedHashMap<String, String>(builder.socials));
     }
 
+    @NotNull
     public String getHandle() { return handle; }
+    @Nullable
     public String getDisplayName() { return displayName; }
+    @Nullable
     public String getEmail() { return email; }
+    @Nullable
     public Map<String, String> getSocials() { return socials; }
 
+    @NotNull
     public static Builder builder() { return new Builder(); }
 
     public static final class Builder {
@@ -77,17 +89,22 @@ public final class CreateCreatorRequest {
         private Builder() {}
 
         /** Required. Unique creator handle (slug). */
-        public Builder handle(String handle) { this.handle = handle; return this; }
+        @NotNull
+        public Builder handle(@NotNull String handle) { this.handle = handle; return this; }
 
         /** Optional display name shown to merchants. */
-        public Builder displayName(String displayName) { this.displayName = displayName; return this; }
+        @NotNull
+        public Builder displayName(@Nullable String displayName) { this.displayName = displayName; return this; }
 
         /** Optional creator email address. */
-        public Builder email(String email) { this.email = email; return this; }
+        @NotNull
+        public Builder email(@Nullable String email) { this.email = email; return this; }
 
         /** Optional social profile map, e.g. {@code {"instagram": "alice"}}. */
-        public Builder socials(Map<String, String> socials) { this.socials = socials; return this; }
+        @NotNull
+        public Builder socials(@Nullable Map<String, String> socials) { this.socials = socials; return this; }
 
+        @NotNull
         public CreateCreatorRequest build() {
             if (handle == null || handle.trim().isEmpty()) {
                 throw new QredexValidationException("CreateCreatorRequest requires a non-blank handle.");

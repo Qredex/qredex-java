@@ -25,6 +25,8 @@ package com.qredex.model.request;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.qredex.exceptions.QredexValidationException;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Request body for locking a Purchase Intent Token (PIT) via the authenticated Integrations API.
@@ -57,10 +59,14 @@ public final class LockPurchaseIntentRequest {
         this.integrityVersion = builder.integrityVersion;
     }
 
+    @NotNull
     public String getToken() { return token; }
+    @Nullable
     public String getSource() { return source; }
+    @Nullable
     public Integer getIntegrityVersion() { return integrityVersion; }
 
+    @NotNull
     public static Builder builder() { return new Builder(); }
 
     public static final class Builder {
@@ -71,14 +77,18 @@ public final class LockPurchaseIntentRequest {
         private Builder() {}
 
         /** Required. The IIT token string to lock into a PIT. */
-        public Builder token(String token) { this.token = token; return this; }
+        @NotNull
+        public Builder token(@NotNull String token) { this.token = token; return this; }
 
         /** Optional source label describing the locking context, e.g. {@code "browser-cart"}. */
-        public Builder source(String source) { this.source = source; return this; }
+        @NotNull
+        public Builder source(@Nullable String source) { this.source = source; return this; }
 
         /** Optional integrity version used during token verification. */
+        @NotNull
         public Builder integrityVersion(int integrityVersion) { this.integrityVersion = integrityVersion; return this; }
 
+        @NotNull
         public LockPurchaseIntentRequest build() {
             if (token == null || token.trim().isEmpty())
                 throw new QredexValidationException("LockPurchaseIntentRequest requires a token.");

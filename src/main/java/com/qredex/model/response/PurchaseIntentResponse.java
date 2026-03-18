@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.qredex.model.standards.OriginMatchStatus;
 import com.qredex.model.standards.WindowStatus;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Purchase Intent Token (PIT) response from the authenticated Integrations lock endpoint.
@@ -102,28 +103,49 @@ public final class PurchaseIntentResponse {
     @JsonProperty("updated_at")
     private String updatedAt;
 
+    @Nullable
     public String getId() { return id; }
+    @Nullable
     public String getMerchantId() { return merchantId; }
+    @Nullable
     public String getStoreId() { return storeId; }
+    @Nullable
     public String getLinkId() { return linkId; }
+    @Nullable
     public String getInfluenceIntentId() { return influenceIntentId; }
     /** The PIT token string. Include this in {@code RecordPaidOrderRequest.purchaseIntentToken}. */
+    @Nullable
     public String getToken() { return token; }
+    @Nullable
     public String getTokenId() { return tokenId; }
+    @Nullable
     public String getSource() { return source; }
+    @Nullable
     public OriginMatchStatus getOriginMatchStatus() { return originMatchStatus; }
+    @Nullable
     public WindowStatus getWindowStatus() { return windowStatus; }
+    @Nullable
     public Integer getAttributionWindowDays() { return attributionWindowDays; }
+    @Nullable
     public Integer getAttributionWindowDaysSnapshot() { return attributionWindowDaysSnapshot; }
+    @Nullable
     public String getStoreDomainSnapshot() { return storeDomainSnapshot; }
+    @Nullable
     public String getLinkExpiryAtSnapshot() { return linkExpiryAtSnapshot; }
+    @Nullable
     public String getDiscountCodeSnapshot() { return discountCodeSnapshot; }
+    @Nullable
     public String getIssuedAt() { return issuedAt; }
+    @Nullable
     public String getExpiresAt() { return expiresAt; }
+    @Nullable
     public String getLockedAt() { return lockedAt; }
     public int getIntegrityVersion() { return integrityVersion; }
+    @Nullable
     public Boolean getEligible() { return eligible; }
+    @Nullable
     public String getCreatedAt() { return createdAt; }
+    @Nullable
     public String getUpdatedAt() { return updatedAt; }
 
     @Override

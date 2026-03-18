@@ -26,6 +26,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.qredex.exceptions.QredexValidationException;
 import com.qredex.model.standards.LinkStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Request body for creating a new Qredex influence link.
@@ -82,16 +84,26 @@ public final class CreateLinkRequest {
         this.status = builder.status;
     }
 
+    @NotNull
     public String getStoreId() { return storeId; }
+    @NotNull
     public String getCreatorId() { return creatorId; }
+    @NotNull
     public String getLinkName() { return linkName; }
+    @NotNull
     public String getDestinationPath() { return destinationPath; }
+    @Nullable
     public String getNote() { return note; }
+    @Nullable
     public Integer getAttributionWindowDays() { return attributionWindowDays; }
+    @Nullable
     public String getLinkExpiryAt() { return linkExpiryAt; }
+    @Nullable
     public String getDiscountCode() { return discountCode; }
+    @Nullable
     public LinkStatus getStatus() { return status; }
 
+    @NotNull
     public static Builder builder() { return new Builder(); }
 
     public static final class Builder {
@@ -108,32 +120,42 @@ public final class CreateLinkRequest {
         private Builder() {}
 
         /** Required. Store UUID to associate this link with. */
-        public Builder storeId(String storeId) { this.storeId = storeId; return this; }
+        @NotNull
+        public Builder storeId(@NotNull String storeId) { this.storeId = storeId; return this; }
 
         /** Required. Creator UUID to associate this link with. */
-        public Builder creatorId(String creatorId) { this.creatorId = creatorId; return this; }
+        @NotNull
+        public Builder creatorId(@NotNull String creatorId) { this.creatorId = creatorId; return this; }
 
         /** Required. Human-readable name for this link. */
-        public Builder linkName(String linkName) { this.linkName = linkName; return this; }
+        @NotNull
+        public Builder linkName(@NotNull String linkName) { this.linkName = linkName; return this; }
 
         /** Required. Path on the merchant's store to redirect to. */
-        public Builder destinationPath(String destinationPath) { this.destinationPath = destinationPath; return this; }
+        @NotNull
+        public Builder destinationPath(@NotNull String destinationPath) { this.destinationPath = destinationPath; return this; }
 
         /** Optional note visible only to merchants. */
-        public Builder note(String note) { this.note = note; return this; }
+        @NotNull
+        public Builder note(@Nullable String note) { this.note = note; return this; }
 
         /** Optional attribution window in days. Server default applies when absent. */
+        @NotNull
         public Builder attributionWindowDays(int attributionWindowDays) { this.attributionWindowDays = attributionWindowDays; return this; }
 
         /** Optional ISO-8601 datetime at which this link expires. */
-        public Builder linkExpiryAt(String linkExpiryAt) { this.linkExpiryAt = linkExpiryAt; return this; }
+        @NotNull
+        public Builder linkExpiryAt(@Nullable String linkExpiryAt) { this.linkExpiryAt = linkExpiryAt; return this; }
 
         /** Optional discount code to attach to this link. */
-        public Builder discountCode(String discountCode) { this.discountCode = discountCode; return this; }
+        @NotNull
+        public Builder discountCode(@Nullable String discountCode) { this.discountCode = discountCode; return this; }
 
         /** Optional initial status. Defaults to ACTIVE when absent. */
-        public Builder status(LinkStatus status) { this.status = status; return this; }
+        @NotNull
+        public Builder status(@Nullable LinkStatus status) { this.status = status; return this; }
 
+        @NotNull
         public CreateLinkRequest build() {
             if (storeId == null || storeId.trim().isEmpty())
                 throw new QredexValidationException("CreateLinkRequest requires storeId.");

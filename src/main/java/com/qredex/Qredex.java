@@ -32,6 +32,8 @@ import com.qredex.resources.IntentsClient;
 import com.qredex.resources.LinksClient;
 import com.qredex.resources.OrdersClient;
 import com.qredex.resources.RefundsClient;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Closeable;
 
@@ -119,7 +121,7 @@ public final class Qredex implements Closeable {
      * @return a configured {@link Qredex} client
      * @throws QredexConfigurationException if the config is invalid
      */
-    public static Qredex init(QredexConfig config) {
+    public static Qredex init(@Nullable QredexConfig config) {
         if (config == null) {
             throw new QredexConfigurationException("QredexConfig must not be null.");
         }
@@ -139,6 +141,7 @@ public final class Qredex implements Closeable {
      *     .build();
      * }</pre>
      */
+    @NotNull
     public static Builder builder() { return new Builder(); }
 
     /**
@@ -162,6 +165,7 @@ public final class Qredex implements Closeable {
      * @return a fully configured {@link Qredex} client
      * @throws QredexConfigurationException if required environment variables are missing or invalid
      */
+    @NotNull
     public static Qredex bootstrap() {
         String clientId = System.getenv("QREDEX_CLIENT_ID");
         String clientSecret = System.getenv("QREDEX_CLIENT_SECRET");
@@ -197,24 +201,31 @@ public final class Qredex implements Closeable {
      * Auth surface for explicit token issuance and cache control.
      * Normal usage does not require calling this; auth is managed automatically.
      */
+    @NotNull
     public QredexAuthClient auth() { return auth; }
 
     /** Creator resource operations: create, get, list. */
+    @NotNull
     public CreatorsClient creators() { return creators; }
 
     /** Influence link resource operations: create, get, list, getStats. */
+    @NotNull
     public LinksClient links() { return links; }
 
     /** IIT and PIT intent operations: issueInfluenceIntentToken, lockPurchaseIntent. */
+    @NotNull
     public IntentsClient intents() { return intents; }
 
     /** Order attribution operations: recordPaidOrder, list, getDetails. */
+    @NotNull
     public OrdersClient orders() { return orders; }
 
     /** Refund ingestion: recordRefund. */
+    @NotNull
     public RefundsClient refunds() { return refunds; }
 
     /** Returns the resolved configuration for this client instance. */
+    @NotNull
     public QredexConfig getConfig() { return config; }
 
     /**
@@ -244,40 +255,51 @@ public final class Qredex implements Closeable {
         private Builder() {}
 
         /** Required. Your Qredex integration client ID. */
-        public Builder clientId(String clientId) { configBuilder.clientId(clientId); return this; }
+        @NotNull
+        public Builder clientId(@NotNull String clientId) { configBuilder.clientId(clientId); return this; }
 
         /** Required. Your Qredex integration client secret. Never logged. */
-        public Builder clientSecret(String clientSecret) { configBuilder.clientSecret(clientSecret); return this; }
+        @NotNull
+        public Builder clientSecret(@NotNull String clientSecret) { configBuilder.clientSecret(clientSecret); return this; }
 
         /** Optional OAuth scope. Defaults to server-side scope for your credentials. */
-        public Builder scope(String scope) { configBuilder.scope(scope); return this; }
+        @NotNull
+        public Builder scope(@Nullable String scope) { configBuilder.scope(scope); return this; }
 
         /** Sets OAuth scopes from typed enum values. */
-        public Builder scopes(QredexScope... scopes) { configBuilder.scopes(scopes); return this; }
+        @NotNull
+        public Builder scopes(@Nullable QredexScope... scopes) { configBuilder.scopes(scopes); return this; }
 
         /** API environment. Defaults to {@link QredexEnvironment#PRODUCTION}. */
-        public Builder environment(QredexEnvironment environment) { configBuilder.environment(environment); return this; }
+        @NotNull
+        public Builder environment(@NotNull QredexEnvironment environment) { configBuilder.environment(environment); return this; }
 
         /** Overrides the base URL. Useful for testing against a local or staging server. */
-        public Builder baseUrl(String baseUrl) { configBuilder.baseUrl(baseUrl); return this; }
+        @NotNull
+        public Builder baseUrl(@NotNull String baseUrl) { configBuilder.baseUrl(baseUrl); return this; }
 
         /** HTTP request timeout in milliseconds. Default is 10,000 ms. */
+        @NotNull
         public Builder timeoutMs(int timeoutMs) { configBuilder.timeoutMs(timeoutMs); return this; }
 
         /** Maximum auth retry attempts on transient failures. Default is 3. */
+        @NotNull
         public Builder maxAuthRetries(int maxAuthRetries) { configBuilder.maxAuthRetries(maxAuthRetries); return this; }
 
         /** Optional string appended to the SDK {@code User-Agent} header. */
-        public Builder userAgentSuffix(String userAgentSuffix) { configBuilder.userAgentSuffix(userAgentSuffix); return this; }
+        @NotNull
+        public Builder userAgentSuffix(@Nullable String userAgentSuffix) { configBuilder.userAgentSuffix(userAgentSuffix); return this; }
 
         /** Optional logger for sanitized request/response diagnostics. Secrets are redacted. */
-        public Builder logger(QredexLogger logger) { configBuilder.logger(logger); return this; }
+        @NotNull
+        public Builder logger(@Nullable QredexLogger logger) { configBuilder.logger(logger); return this; }
 
         /**
          * Builds the {@link Qredex} client. Validates configuration eagerly.
          *
          * @throws QredexConfigurationException if required options are missing or invalid
          */
+        @NotNull
         public Qredex build() {
             return new Qredex(configBuilder.build());
         }
@@ -305,6 +327,7 @@ public final class Qredex implements Closeable {
          *
          * @return the raw {@link OAuthTokenResponse}. Does not contain the client secret.
          */
+        @NotNull
         public OAuthTokenResponse issueToken() {
             return tokenProvider.issueToken();
         }

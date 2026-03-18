@@ -56,7 +56,7 @@ Thrown when a network or transport error occurs with no HTTP response (e.g., DNS
 
 ```java
 try {
-    qredex.creators().list(null);
+    qredex.creators().list();
 } catch (QredexNetworkException e) {
     log.error("Network error: " + e.getMessage(), e.getCause());
 }

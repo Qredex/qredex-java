@@ -25,6 +25,8 @@ package com.qredex.model.request;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.qredex.exceptions.QredexValidationException;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Request body for recording a refund against a previously recorded paid order.
@@ -66,12 +68,18 @@ public final class RecordRefundRequest {
         this.refundedAt = builder.refundedAt;
     }
 
+    @NotNull
     public String getStoreId() { return storeId; }
+    @NotNull
     public String getExternalOrderId() { return externalOrderId; }
+    @NotNull
     public String getExternalRefundId() { return externalRefundId; }
+    @Nullable
     public Double getRefundTotal() { return refundTotal; }
+    @Nullable
     public String getRefundedAt() { return refundedAt; }
 
+    @NotNull
     public static Builder builder() { return new Builder(); }
 
     public static final class Builder {
@@ -84,20 +92,26 @@ public final class RecordRefundRequest {
         private Builder() {}
 
         /** Required. Store UUID matching the original order. */
-        public Builder storeId(String storeId) { this.storeId = storeId; return this; }
+        @NotNull
+        public Builder storeId(@NotNull String storeId) { this.storeId = storeId; return this; }
 
         /** Required. External order ID matching the original paid order. */
-        public Builder externalOrderId(String externalOrderId) { this.externalOrderId = externalOrderId; return this; }
+        @NotNull
+        public Builder externalOrderId(@NotNull String externalOrderId) { this.externalOrderId = externalOrderId; return this; }
 
         /** Required. Stable external refund ID from your platform. */
-        public Builder externalRefundId(String externalRefundId) { this.externalRefundId = externalRefundId; return this; }
+        @NotNull
+        public Builder externalRefundId(@NotNull String externalRefundId) { this.externalRefundId = externalRefundId; return this; }
 
         /** Optional total amount refunded. */
+        @NotNull
         public Builder refundTotal(double refundTotal) { this.refundTotal = refundTotal; return this; }
 
         /** Optional ISO-8601 datetime the refund was issued. */
-        public Builder refundedAt(String refundedAt) { this.refundedAt = refundedAt; return this; }
+        @NotNull
+        public Builder refundedAt(@Nullable String refundedAt) { this.refundedAt = refundedAt; return this; }
 
+        @NotNull
         public RecordRefundRequest build() {
             if (storeId == null || storeId.trim().isEmpty())
                 throw new QredexValidationException("RecordRefundRequest requires storeId.");

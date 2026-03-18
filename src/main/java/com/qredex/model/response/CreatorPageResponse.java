@@ -24,6 +24,9 @@ package com.qredex.model.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
 import java.util.List;
 
 /** Paginated creator list response. */
@@ -45,7 +48,8 @@ public final class CreatorPageResponse {
     @JsonProperty("total_pages")
     private int totalPages;
 
-    public List<CreatorListResponse> getItems() { return items; }
+    @Nullable
+    public List<CreatorListResponse> getItems() { return items == null ? null : Collections.unmodifiableList(items); }
     public int getPage() { return page; }
     public int getSize() { return size; }
     public long getTotalElements() { return totalElements; }

@@ -25,6 +25,8 @@ package com.qredex.model.request;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.qredex.exceptions.QredexValidationException;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Request body for recording a paid order into the Qredex Integrations API.
@@ -92,18 +94,30 @@ public final class RecordPaidOrderRequest {
         this.purchaseIntentToken = builder.purchaseIntentToken;
     }
 
+    @NotNull
     public String getStoreId() { return storeId; }
+    @NotNull
     public String getExternalOrderId() { return externalOrderId; }
+    @Nullable
     public String getOrderNumber() { return orderNumber; }
+    @Nullable
     public String getPaidAt() { return paidAt; }
+    @NotNull
     public String getCurrency() { return currency; }
+    @Nullable
     public Double getSubtotalPrice() { return subtotalPrice; }
+    @Nullable
     public Double getDiscountTotal() { return discountTotal; }
+    @Nullable
     public Double getTotalPrice() { return totalPrice; }
+    @Nullable
     public String getCustomerEmailHash() { return customerEmailHash; }
+    @Nullable
     public String getCheckoutToken() { return checkoutToken; }
+    @Nullable
     public String getPurchaseIntentToken() { return purchaseIntentToken; }
 
+    @NotNull
     public static Builder builder() { return new Builder(); }
 
     public static final class Builder {
@@ -122,41 +136,53 @@ public final class RecordPaidOrderRequest {
         private Builder() {}
 
         /** Required. Store UUID where the order originated. */
-        public Builder storeId(String storeId) { this.storeId = storeId; return this; }
+        @NotNull
+        public Builder storeId(@NotNull String storeId) { this.storeId = storeId; return this; }
 
         /** Required. Stable external order ID from your platform. */
-        public Builder externalOrderId(String externalOrderId) { this.externalOrderId = externalOrderId; return this; }
+        @NotNull
+        public Builder externalOrderId(@NotNull String externalOrderId) { this.externalOrderId = externalOrderId; return this; }
 
         /** Optional human-readable order number. */
-        public Builder orderNumber(String orderNumber) { this.orderNumber = orderNumber; return this; }
+        @NotNull
+        public Builder orderNumber(@Nullable String orderNumber) { this.orderNumber = orderNumber; return this; }
 
         /** Optional ISO-8601 datetime the order was paid. */
-        public Builder paidAt(String paidAt) { this.paidAt = paidAt; return this; }
+        @NotNull
+        public Builder paidAt(@Nullable String paidAt) { this.paidAt = paidAt; return this; }
 
         /** Required. ISO-4217 currency code, e.g. {@code "USD"}. */
-        public Builder currency(String currency) { this.currency = currency; return this; }
+        @NotNull
+        public Builder currency(@NotNull String currency) { this.currency = currency; return this; }
 
         /** Optional subtotal before discounts. */
+        @NotNull
         public Builder subtotalPrice(double subtotalPrice) { this.subtotalPrice = subtotalPrice; return this; }
 
         /** Optional total discount applied. */
+        @NotNull
         public Builder discountTotal(double discountTotal) { this.discountTotal = discountTotal; return this; }
 
         /** Optional total order amount (GMV). */
+        @NotNull
         public Builder totalPrice(double totalPrice) { this.totalPrice = totalPrice; return this; }
 
         /** Optional hashed customer email for duplicate detection. */
-        public Builder customerEmailHash(String customerEmailHash) { this.customerEmailHash = customerEmailHash; return this; }
+        @NotNull
+        public Builder customerEmailHash(@Nullable String customerEmailHash) { this.customerEmailHash = customerEmailHash; return this; }
 
         /** Optional checkout token from your platform's checkout session. */
-        public Builder checkoutToken(String checkoutToken) { this.checkoutToken = checkoutToken; return this; }
+        @NotNull
+        public Builder checkoutToken(@Nullable String checkoutToken) { this.checkoutToken = checkoutToken; return this; }
 
         /**
          * Optional Purchase Intent Token (PIT) locked at cart time.
          * Include this for order attribution to a creator's influence link.
          */
-        public Builder purchaseIntentToken(String purchaseIntentToken) { this.purchaseIntentToken = purchaseIntentToken; return this; }
+        @NotNull
+        public Builder purchaseIntentToken(@Nullable String purchaseIntentToken) { this.purchaseIntentToken = purchaseIntentToken; return this; }
 
+        @NotNull
         public RecordPaidOrderRequest build() {
             if (storeId == null || storeId.trim().isEmpty())
                 throw new QredexValidationException("RecordPaidOrderRequest requires storeId.");

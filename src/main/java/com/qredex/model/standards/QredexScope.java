@@ -24,6 +24,8 @@ package com.qredex.model.standards;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Canonical OAuth scopes for the Qredex Integrations API.
@@ -77,10 +79,12 @@ public enum QredexScope {
 
     /** The OAuth scope string sent to the token endpoint. */
     @JsonValue
+    @NotNull
     public String getValue() { return value; }
 
     @JsonCreator
-    public static QredexScope fromValue(String value) {
+    @Nullable
+    public static QredexScope fromValue(@Nullable String value) {
         if (value == null) return null;
         for (QredexScope s : values()) {
             if (s.value.equalsIgnoreCase(value)) return s;
@@ -94,7 +98,8 @@ public enum QredexScope {
      * @param scopes one or more scopes
      * @return space-delimited scope string, or {@code null} if empty
      */
-    public static String join(QredexScope... scopes) {
+    @Nullable
+    public static String join(@Nullable QredexScope... scopes) {
         if (scopes == null || scopes.length == 0) return null;
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < scopes.length; i++) {

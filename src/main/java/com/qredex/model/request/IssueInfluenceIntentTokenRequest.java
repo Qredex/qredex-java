@@ -25,6 +25,8 @@ package com.qredex.model.request;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.qredex.exceptions.QredexValidationException;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Request body for issuing an Influence Intent Token (IIT) via the Integrations API.
@@ -74,14 +76,22 @@ public final class IssueInfluenceIntentTokenRequest {
         this.integrityVersion = builder.integrityVersion;
     }
 
+    @NotNull
     public String getLinkId() { return linkId; }
+    @Nullable
     public String getIpHash() { return ipHash; }
+    @Nullable
     public String getUserAgentHash() { return userAgentHash; }
+    @Nullable
     public String getReferrer() { return referrer; }
+    @Nullable
     public String getLandingPath() { return landingPath; }
+    @Nullable
     public String getExpiresAt() { return expiresAt; }
+    @Nullable
     public Integer getIntegrityVersion() { return integrityVersion; }
 
+    @NotNull
     public static Builder builder() { return new Builder(); }
 
     public static final class Builder {
@@ -96,26 +106,34 @@ public final class IssueInfluenceIntentTokenRequest {
         private Builder() {}
 
         /** Required. UUID of the influence link to issue the IIT for. */
-        public Builder linkId(String linkId) { this.linkId = linkId; return this; }
+        @NotNull
+        public Builder linkId(@NotNull String linkId) { this.linkId = linkId; return this; }
 
         /** Optional hashed IP address of the clicking user. */
-        public Builder ipHash(String ipHash) { this.ipHash = ipHash; return this; }
+        @NotNull
+        public Builder ipHash(@Nullable String ipHash) { this.ipHash = ipHash; return this; }
 
         /** Optional hashed user-agent string of the clicking user. */
-        public Builder userAgentHash(String userAgentHash) { this.userAgentHash = userAgentHash; return this; }
+        @NotNull
+        public Builder userAgentHash(@Nullable String userAgentHash) { this.userAgentHash = userAgentHash; return this; }
 
         /** Optional referrer URL where the click originated. */
-        public Builder referrer(String referrer) { this.referrer = referrer; return this; }
+        @NotNull
+        public Builder referrer(@Nullable String referrer) { this.referrer = referrer; return this; }
 
         /** Optional destination path where the user landed. */
-        public Builder landingPath(String landingPath) { this.landingPath = landingPath; return this; }
+        @NotNull
+        public Builder landingPath(@Nullable String landingPath) { this.landingPath = landingPath; return this; }
 
         /** Optional ISO-8601 expiry override for this IIT. */
-        public Builder expiresAt(String expiresAt) { this.expiresAt = expiresAt; return this; }
+        @NotNull
+        public Builder expiresAt(@Nullable String expiresAt) { this.expiresAt = expiresAt; return this; }
 
         /** Optional integrity version to use for token signing. */
+        @NotNull
         public Builder integrityVersion(int integrityVersion) { this.integrityVersion = integrityVersion; return this; }
 
+        @NotNull
         public IssueInfluenceIntentTokenRequest build() {
             if (linkId == null || linkId.trim().isEmpty())
                 throw new QredexValidationException("IssueInfluenceIntentTokenRequest requires linkId.");

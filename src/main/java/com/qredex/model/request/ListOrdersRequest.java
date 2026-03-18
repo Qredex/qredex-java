@@ -22,6 +22,9 @@
  */
 package com.qredex.model.request;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Query parameters for listing order attribution records with optional pagination.
  */
@@ -35,9 +38,12 @@ public final class ListOrdersRequest {
         this.size = builder.size;
     }
 
+    @Nullable
     public Integer getPage() { return page; }
+    @Nullable
     public Integer getSize() { return size; }
 
+    @NotNull
     public static Builder builder() { return new Builder(); }
 
     public static final class Builder {
@@ -46,13 +52,17 @@ public final class ListOrdersRequest {
 
         private Builder() {}
 
+        @NotNull
         public Builder page(int page) { this.page = page; return this; }
+        @NotNull
         public Builder size(int size) { this.size = size; return this; }
 
+        @NotNull
         public ListOrdersRequest build() { return new ListOrdersRequest(this); }
     }
 
     /** Returns an empty request (no filters, server defaults). */
+    @NotNull
     public static ListOrdersRequest defaults() { return new Builder().build(); }
 
     @Override

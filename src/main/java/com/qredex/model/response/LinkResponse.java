@@ -25,6 +25,7 @@ package com.qredex.model.response;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.qredex.model.standards.LinkStatus;
+import org.jetbrains.annotations.Nullable;
 
 /** Full influence link resource response. */
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -78,21 +79,36 @@ public final class LinkResponse {
     @JsonProperty("updated_at")
     private String updatedAt;
 
+    @Nullable
     public String getId() { return id; }
+    @Nullable
     public String getMerchantId() { return merchantId; }
+    @Nullable
     public String getStoreId() { return storeId; }
+    @Nullable
     public String getCreatorId() { return creatorId; }
+    @Nullable
     public String getLinkName() { return linkName; }
+    @Nullable
     public String getLinkCode() { return linkCode; }
+    @Nullable
     public String getPublicLinkUrl() { return publicLinkUrl; }
+    @Nullable
     public String getDestinationPath() { return destinationPath; }
+    @Nullable
     public String getNote() { return note; }
+    @Nullable
     public LinkStatus getStatus() { return status; }
     public int getAttributionWindowDays() { return attributionWindowDays; }
+    @Nullable
     public String getLinkExpiryAt() { return linkExpiryAt; }
+    @Nullable
     public String getDisabledAt() { return disabledAt; }
+    @Nullable
     public String getDiscountCode() { return discountCode; }
+    @Nullable
     public String getCreatedAt() { return createdAt; }
+    @Nullable
     public String getUpdatedAt() { return updatedAt; }
 
     @Override

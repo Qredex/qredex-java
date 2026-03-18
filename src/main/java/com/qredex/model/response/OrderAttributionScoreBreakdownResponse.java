@@ -25,6 +25,9 @@ package com.qredex.model.response;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.qredex.model.standards.*;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
 import java.util.List;
 
 /** Attribution integrity score breakdown, nested inside {@link OrderAttributionDetailsResponse}. */
@@ -70,19 +73,32 @@ public final class OrderAttributionScoreBreakdownResponse {
     @JsonProperty("review_reasons")
     private List<String> reviewReasons;
 
+    @Nullable
     public Integer getScoreVersion() { return scoreVersion; }
+    @Nullable
     public Integer getBaseScore() { return baseScore; }
+    @Nullable
     public Integer getOriginAdjustment() { return originAdjustment; }
+    @Nullable
     public Integer getDuplicateAdjustment() { return duplicateAdjustment; }
+    @Nullable
     public Integer getFinalScore() { return finalScore; }
+    @Nullable
     public TokenIntegrity getTokenIntegrity() { return tokenIntegrity; }
+    @Nullable
     public IntegrityReason getIntegrityReason() { return integrityReason; }
+    @Nullable
     public WindowStatus getWindowStatus() { return windowStatus; }
+    @Nullable
     public ResolutionStatus getResolutionStatus() { return resolutionStatus; }
+    @Nullable
     public OriginMatchStatus getOriginMatchStatus() { return originMatchStatus; }
+    @Nullable
     public DuplicateConfidence getDuplicateConfidence() { return duplicateConfidence; }
+    @Nullable
     public Boolean getReviewRequired() { return reviewRequired; }
-    public List<String> getReviewReasons() { return reviewReasons; }
+    @Nullable
+    public List<String> getReviewReasons() { return reviewReasons == null ? null : Collections.unmodifiableList(reviewReasons); }
 
     @Override
     public String toString() {

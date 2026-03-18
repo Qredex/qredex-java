@@ -25,6 +25,9 @@ package com.qredex.model.response;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.qredex.model.standards.CreatorStatus;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
 import java.util.Map;
 
 /** Full creator resource response. */
@@ -55,13 +58,21 @@ public final class CreatorResponse {
     @JsonProperty("updated_at")
     private String updatedAt;
 
+    @Nullable
     public String getId() { return id; }
+    @Nullable
     public String getHandle() { return handle; }
+    @Nullable
     public CreatorStatus getStatus() { return status; }
+    @Nullable
     public String getDisplayName() { return displayName; }
+    @Nullable
     public String getEmail() { return email; }
-    public Map<String, String> getSocials() { return socials; }
+    @Nullable
+    public Map<String, String> getSocials() { return socials == null ? null : Collections.unmodifiableMap(socials); }
+    @Nullable
     public String getCreatedAt() { return createdAt; }
+    @Nullable
     public String getUpdatedAt() { return updatedAt; }
 
     @Override

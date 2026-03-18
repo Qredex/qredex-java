@@ -22,6 +22,8 @@
  */
 package com.qredex.exceptions;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Thrown when the API returns HTTP 429: the caller has exceeded its rate limit.
  *
@@ -43,5 +45,6 @@ public class QredexRateLimitException extends QredexApiException {
      * Server-indicated retry interval in seconds from the {@code Retry-After} response header,
      * or {@code null} if the header was absent.
      */
+    @Nullable
     public Long getRetryAfterSeconds() { return retryAfterSeconds; }
 }

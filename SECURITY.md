@@ -47,7 +47,7 @@ We will acknowledge receipt within 48 hours and provide a timeline for resolutio
 
 ## Scope
 
-This policy covers the `com.qredex:sdk` Java artifact and its source code in this repository.
+This policy covers the `com.qredex:qredex-java` Java artifact and its source code in this repository.
 
 It does not cover:
 - The Qredex API itself (report API vulnerabilities to security@qredex.com separately)

@@ -22,12 +22,16 @@
  */
 package com.qredex.resources;
 
+import com.qredex.QredexCallOptions;
 import com.qredex.internal.HttpTransport;
 import com.qredex.internal.TokenProvider;
 import com.qredex.model.request.IssueInfluenceIntentTokenRequest;
 import com.qredex.model.request.LockPurchaseIntentRequest;
 import com.qredex.model.response.InfluenceIntentResponse;
 import com.qredex.model.response.PurchaseIntentResponse;
+import com.qredex.exceptions.QredexValidationException;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Influence Intent Token (IIT) and Purchase Intent Token (PIT) operations
@@ -61,12 +65,25 @@ public final class IntentsClient {
      * @param request IIT parameters; {@code linkId} is required
      * @return the {@link InfluenceIntentResponse} containing the IIT {@code token}
      */
-    public InfluenceIntentResponse issueInfluenceIntentToken(IssueInfluenceIntentTokenRequest request) {
+    @NotNull
+    public InfluenceIntentResponse issueInfluenceIntentToken(@NotNull IssueInfluenceIntentTokenRequest request) {
+        return issueInfluenceIntentToken(request, null);
+    }
+
+    @NotNull
+    public InfluenceIntentResponse issueInfluenceIntentToken(
+        @NotNull IssueInfluenceIntentTokenRequest request,
+        @Nullable QredexCallOptions options
+    ) {
+        if (request == null) {
+            throw new QredexValidationException("request must not be null.");
+        }
         return transport.post(
             "/api/v1/integrations/intents/token",
             request,
             tokenProvider.getAuthorizationHeader(),
-            InfluenceIntentResponse.class);
+            InfluenceIntentResponse.class,
+            options);
     }
 
     /**
@@ -79,11 +96,24 @@ public final class IntentsClient {
      * @param request PIT lock parameters; the IIT {@code token} is required
      * @return the {@link PurchaseIntentResponse}
      */
-    public PurchaseIntentResponse lockPurchaseIntent(LockPurchaseIntentRequest request) {
+    @NotNull
+    public PurchaseIntentResponse lockPurchaseIntent(@NotNull LockPurchaseIntentRequest request) {
+        return lockPurchaseIntent(request, null);
+    }
+
+    @NotNull
+    public PurchaseIntentResponse lockPurchaseIntent(
+        @NotNull LockPurchaseIntentRequest request,
+        @Nullable QredexCallOptions options
+    ) {
+        if (request == null) {
+            throw new QredexValidationException("request must not be null.");
+        }
         return transport.post(
             "/api/v1/integrations/intents/lock",
             request,
             tokenProvider.getAuthorizationHeader(),
-            PurchaseIntentResponse.class);
+            PurchaseIntentResponse.class,
+            options);
     }
 }

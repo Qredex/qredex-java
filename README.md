@@ -21,7 +21,7 @@
    If you need additional information or have any questions, please email: copyright@qredex.com
 -->
 
-# `@qredex/java`
+# `qredex-java`
 
 [![CI](https://github.com/Qredex/qredex-java/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Qredex/qredex-java/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
@@ -56,23 +56,17 @@ implementation 'com.qredex:qredex-java:0.1.0'
 
 ## Quick Start
 
-Set these environment variables:
+Set:
 
 - `QREDEX_CLIENT_ID`
 - `QREDEX_CLIENT_SECRET`
 
-Optional:
-
-- `QREDEX_SCOPE`
-- `QREDEX_ENVIRONMENT` — defaults to `production`
-
-Then initialize the client:
+Then run the canonical server-side flow:
 
 ```java
-import com.qredex.Qredex;
-
-// Environment bootstrap — reads QREDEX_CLIENT_ID and QREDEX_CLIENT_SECRET
 Qredex qredex = Qredex.bootstrap();
+
+String storeId = System.getenv("QREDEX_STORE_ID");
 
 CreatorResponse creator = qredex.creators().create(
     CreateCreatorRequest.builder()
@@ -82,10 +76,39 @@ CreatorResponse creator = qredex.creators().create(
 
 LinkResponse link = qredex.links().create(
     CreateLinkRequest.builder()
-        .storeId(System.getenv("QREDEX_STORE_ID"))
+        .storeId(storeId)
         .creatorId(creator.getId())
         .linkName("spring-launch")
         .destinationPath("/products/spring-launch")
+        .build());
+
+InfluenceIntentResponse iit = qredex.intents().issueInfluenceIntentToken(
+    IssueInfluenceIntentTokenRequest.builder()
+        .linkId(link.getId())
+        .landingPath("/products/spring-launch")
+        .build());
+
+PurchaseIntentResponse pit = qredex.intents().lockPurchaseIntent(
+    LockPurchaseIntentRequest.builder()
+        .token(iit.getToken())
+        .source("backend-cart")
+        .build());
+
+OrderAttributionResponse order = qredex.orders().recordPaidOrder(
+    RecordPaidOrderRequest.builder()
+        .storeId(storeId)
+        .externalOrderId("order-100045")
+        .currency("USD")
+        .totalPrice(110.00)
+        .purchaseIntentToken(pit.getToken())
+        .build());
+
+qredex.refunds().recordRefund(
+    RecordRefundRequest.builder()
+        .storeId(storeId)
+        .externalOrderId("order-100045")
+        .externalRefundId("refund-100045-1")
+        .refundTotal(25.00)
         .build());
 ```
 
@@ -173,10 +196,11 @@ qredex.auth().clearTokenCache();
 |---|---|---|
 | `QREDEX_CLIENT_ID` | Yes | Integration client ID |
 | `QREDEX_CLIENT_SECRET` | Yes | Integration client secret |
-| `QREDEX_ENVIRONMENT` | No | `production`, `staging`, or `development` |
+| `QREDEX_ENVIRONMENT` | No | `production` or `staging` |
 | `QREDEX_SCOPE` | No | Space-delimited OAuth scope string |
 
-Use `QREDEX_ENVIRONMENT` only when you need `staging` or `development`. Most integrations can omit it.
+Use `QREDEX_ENVIRONMENT` only when you need `staging`. Most integrations can omit it.
+For local testing against a non-Qredex base URL, use `Qredex.builder().baseUrl(...)` instead of treating localhost as a platform environment.
 
 ## Scopes
 
@@ -289,57 +313,14 @@ See [docs/ERRORS.md](docs/ERRORS.md) for the full exception hierarchy and ingest
 
 ## Canonical Flow
 
-```java
-// 1. Create or fetch a creator
-CreatorResponse creator = qredex.creators().create(
-    CreateCreatorRequest.builder()
-        .handle("alice")
-        .displayName("Alice")
-        .build());
+The shortest safe backend path is:
 
-// 2. Create a link
-LinkResponse link = qredex.links().create(
-    CreateLinkRequest.builder()
-        .storeId(storeId)
-        .creatorId(creator.getId())
-        .linkName("spring-launch")
-        .destinationPath("/products/spring-launch")
-        .attributionWindowDays(30)
-        .build());
-
-// 3. Issue an IIT (Influence Intent Token) — backend click flow
-InfluenceIntentResponse iit = qredex.intents().issueInfluenceIntentToken(
-    IssueInfluenceIntentTokenRequest.builder()
-        .linkId(link.getId())
-        .landingPath("/products/spring-launch")
-        .build());
-
-// 4. Lock a PIT (Purchase Intent Token) — at cart time
-PurchaseIntentResponse pit = qredex.intents().lockPurchaseIntent(
-    LockPurchaseIntentRequest.builder()
-        .token(iit.getToken())
-        .source("backend-cart")
-        .build());
-
-// 5. Record the paid order
-OrderAttributionResponse order = qredex.orders().recordPaidOrder(
-    RecordPaidOrderRequest.builder()
-        .storeId(storeId)
-        .externalOrderId("order-100045")
-        .currency("USD")
-        .totalPrice(110.00)
-        .purchaseIntentToken(pit.getToken())
-        .build());
-
-// 6. Record refunds later with a stable external refund ID
-qredex.refunds().recordRefund(
-    RecordRefundRequest.builder()
-        .storeId(storeId)
-        .externalOrderId("order-100045")
-        .externalRefundId("refund-100045-1")
-        .refundTotal(25.00)
-        .build());
-```
+1. Create a creator.
+2. Create a link for a store and creator.
+3. Issue an IIT for the backend click event.
+4. Lock the IIT into a PIT at cart time.
+5. Record the paid order with the PIT.
+6. Record refunds later with a stable external refund ID.
 
 ## Docs
 

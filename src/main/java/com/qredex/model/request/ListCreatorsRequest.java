@@ -23,6 +23,8 @@
 package com.qredex.model.request;
 
 import com.qredex.model.standards.CreatorStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Query parameters for listing creators with optional pagination and status filter.
@@ -44,10 +46,14 @@ public final class ListCreatorsRequest {
         this.status = builder.status;
     }
 
+    @Nullable
     public Integer getPage() { return page; }
+    @Nullable
     public Integer getSize() { return size; }
+    @Nullable
     public CreatorStatus getStatus() { return status; }
 
+    @NotNull
     public static Builder builder() { return new Builder(); }
 
     public static final class Builder {
@@ -57,14 +63,19 @@ public final class ListCreatorsRequest {
 
         private Builder() {}
 
+        @NotNull
         public Builder page(int page) { this.page = page; return this; }
+        @NotNull
         public Builder size(int size) { this.size = size; return this; }
-        public Builder status(CreatorStatus status) { this.status = status; return this; }
+        @NotNull
+        public Builder status(@Nullable CreatorStatus status) { this.status = status; return this; }
 
+        @NotNull
         public ListCreatorsRequest build() { return new ListCreatorsRequest(this); }
     }
 
     /** Returns an empty request (no filters, server defaults). */
+    @NotNull
     public static ListCreatorsRequest defaults() { return new Builder().build(); }
 
     @Override

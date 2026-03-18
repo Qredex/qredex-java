@@ -22,10 +22,14 @@
  */
 package com.qredex.resources;
 
+import com.qredex.QredexCallOptions;
 import com.qredex.internal.HttpTransport;
 import com.qredex.internal.TokenProvider;
+import com.qredex.exceptions.QredexValidationException;
 import com.qredex.model.request.RecordRefundRequest;
 import com.qredex.model.response.OrderAttributionResponse;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Refund ingestion operations for previously recorded paid orders.
@@ -52,11 +56,24 @@ public final class RefundsClient {
      *                and {@code externalRefundId} are required
      * @return the updated {@link OrderAttributionResponse}
      */
-    public OrderAttributionResponse recordRefund(RecordRefundRequest request) {
+    @NotNull
+    public OrderAttributionResponse recordRefund(@NotNull RecordRefundRequest request) {
+        return recordRefund(request, null);
+    }
+
+    @NotNull
+    public OrderAttributionResponse recordRefund(
+        @NotNull RecordRefundRequest request,
+        @Nullable QredexCallOptions options
+    ) {
+        if (request == null) {
+            throw new QredexValidationException("request must not be null.");
+        }
         return transport.post(
             "/api/v1/integrations/orders/refund",
             request,
             tokenProvider.getAuthorizationHeader(),
-            OrderAttributionResponse.class);
+            OrderAttributionResponse.class,
+            options);
     }
 }

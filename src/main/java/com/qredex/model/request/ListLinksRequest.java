@@ -23,6 +23,8 @@
 package com.qredex.model.request;
 
 import com.qredex.model.standards.LinkStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Query parameters for listing influence links with optional filters and pagination.
@@ -43,12 +45,18 @@ public final class ListLinksRequest {
         this.expired = builder.expired;
     }
 
+    @Nullable
     public Integer getPage() { return page; }
+    @Nullable
     public Integer getSize() { return size; }
+    @Nullable
     public LinkStatus getStatus() { return status; }
+    @Nullable
     public String getDestination() { return destination; }
+    @Nullable
     public Boolean getExpired() { return expired; }
 
+    @NotNull
     public static Builder builder() { return new Builder(); }
 
     public static final class Builder {
@@ -60,16 +68,23 @@ public final class ListLinksRequest {
 
         private Builder() {}
 
+        @NotNull
         public Builder page(int page) { this.page = page; return this; }
+        @NotNull
         public Builder size(int size) { this.size = size; return this; }
-        public Builder status(LinkStatus status) { this.status = status; return this; }
-        public Builder destination(String destination) { this.destination = destination; return this; }
+        @NotNull
+        public Builder status(@Nullable LinkStatus status) { this.status = status; return this; }
+        @NotNull
+        public Builder destination(@Nullable String destination) { this.destination = destination; return this; }
+        @NotNull
         public Builder expired(boolean expired) { this.expired = expired; return this; }
 
+        @NotNull
         public ListLinksRequest build() { return new ListLinksRequest(this); }
     }
 
     /** Returns an empty request (no filters, server defaults). */
+    @NotNull
     public static ListLinksRequest defaults() { return new Builder().build(); }
 
     @Override

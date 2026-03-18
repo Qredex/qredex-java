@@ -22,6 +22,8 @@
  */
 package com.qredex.exceptions;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Base exception for all Qredex SDK errors.
  *
@@ -68,18 +70,23 @@ public class QredexException extends RuntimeException {
     }
 
     /** HTTP status code from the API response, or {@code null} for non-HTTP failures. */
+    @Nullable
     public Integer getStatus() { return status; }
 
     /** Qredex {@code error_code} field from the API error body, or {@code null} if absent. */
+    @Nullable
     public String getErrorCode() { return errorCode; }
 
     /** Qredex {@code X-Request-Id} header value, or {@code null} if absent. */
+    @Nullable
     public String getRequestId() { return requestId; }
 
     /** Qredex {@code X-Trace-Id} header value, or {@code null} if absent. */
+    @Nullable
     public String getTraceId() { return traceId; }
 
     /** Raw response body text, useful for debugging. Never contains secrets. */
+    @Nullable
     public String getResponseBody() { return responseBody; }
 
     @Override

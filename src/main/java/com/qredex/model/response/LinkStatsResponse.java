@@ -24,6 +24,7 @@ package com.qredex.model.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jetbrains.annotations.Nullable;
 
 /** Aggregate click, session, and revenue statistics for an influence link. */
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -56,14 +57,23 @@ public final class LinkStatsResponse {
     @JsonProperty("last_order_at")
     private String lastOrderAt;
 
+    @Nullable
     public String getLinkId() { return linkId; }
+    @Nullable
     public Long getClicksCount() { return clicksCount; }
+    @Nullable
     public Long getSessionsCount() { return sessionsCount; }
+    @Nullable
     public Long getOrdersCount() { return ordersCount; }
+    @Nullable
     public Double getRevenueTotal() { return revenueTotal; }
+    @Nullable
     public Long getTokenInvalidCount() { return tokenInvalidCount; }
+    @Nullable
     public Long getTokenMissingCount() { return tokenMissingCount; }
+    @Nullable
     public String getLastClickAt() { return lastClickAt; }
+    @Nullable
     public String getLastOrderAt() { return lastOrderAt; }
 
     @Override

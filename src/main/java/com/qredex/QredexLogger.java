@@ -22,6 +22,9 @@
  */
 package com.qredex;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Minimal logger interface for sanitized Qredex SDK diagnostics.
  *
@@ -45,16 +48,16 @@ package com.qredex;
  * }</pre>
  */
 public interface QredexLogger {
-    void debug(String message);
-    void info(String message);
-    void warn(String message);
-    void error(String message);
+    void debug(@NotNull String message);
+    void info(@NotNull String message);
+    void warn(@NotNull String message);
+    void error(@NotNull String message);
 
     /**
      * Logs an error message with a cause. Override this to pass stack traces to your logger.
      * The default implementation delegates to {@link #error(String)}.
      */
-    default void error(String message, Throwable cause) {
+    default void error(@NotNull String message, @Nullable Throwable cause) {
         error(message);
     }
 }

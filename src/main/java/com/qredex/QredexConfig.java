@@ -24,6 +24,8 @@ package com.qredex;
 
 import com.qredex.exceptions.QredexConfigurationException;
 import com.qredex.model.standards.QredexScope;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Immutable configuration for the {@link Qredex} client.
@@ -62,18 +64,23 @@ public final class QredexConfig {
     }
 
     /** Client ID for client-credentials auth. Never logged. */
+    @NotNull
     public String getClientId() { return clientId; }
 
     /** Client secret for client-credentials auth. Never logged. */
+    @NotNull
     public String getClientSecret() { return clientSecret; }
 
     /** Optional OAuth scope string. When {@code null} the server default is used. */
+    @Nullable
     public String getScope() { return scope; }
 
     /** Resolved Qredex environment. */
+    @NotNull
     public QredexEnvironment getEnvironment() { return environment; }
 
     /** Effective base URL (environment default or explicit override). */
+    @NotNull
     public String getBaseUrl() { return baseUrl; }
 
     /** HTTP request timeout in milliseconds. Default is 10,000 ms. */
@@ -83,14 +90,18 @@ public final class QredexConfig {
     public int getMaxAuthRetries() { return maxAuthRetries; }
 
     /** Optional string appended to the {@code User-Agent} header. */
+    @Nullable
     public String getUserAgentSuffix() { return userAgentSuffix; }
 
     /** Optional logger for sanitized SDK diagnostics. Secrets are never logged. */
+    @Nullable
     public QredexLogger getLogger() { return logger; }
 
+    @NotNull
     public static Builder builder() { return new Builder(); }
 
     /** Creates a builder pre-populated with this config's values. */
+    @NotNull
     public Builder toBuilder() {
         return new Builder()
             .clientId(clientId)
@@ -118,35 +129,46 @@ public final class QredexConfig {
         private Builder() {}
 
         /** Required. Your Qredex integration client ID. */
-        public Builder clientId(String clientId) { this.clientId = clientId; return this; }
+        @NotNull
+        public Builder clientId(@NotNull String clientId) { this.clientId = clientId; return this; }
 
         /** Required. Your Qredex integration client secret. Never logged. */
-        public Builder clientSecret(String clientSecret) { this.clientSecret = clientSecret; return this; }
+        @NotNull
+        public Builder clientSecret(@NotNull String clientSecret) { this.clientSecret = clientSecret; return this; }
 
         /** Optional OAuth scope. Defaults to server-side scope for your client credentials. */
-        public Builder scope(String scope) { this.scope = scope; return this; }
+        @NotNull
+        public Builder scope(@Nullable String scope) { this.scope = scope; return this; }
 
         /** Sets OAuth scopes from typed enum values. Replaces any previous scope string. */
-        public Builder scopes(QredexScope... scopes) { this.scope = QredexScope.join(scopes); return this; }
+        @NotNull
+        public Builder scopes(@Nullable QredexScope... scopes) { this.scope = QredexScope.join(scopes); return this; }
 
         /** API environment. Defaults to {@link QredexEnvironment#PRODUCTION}. */
-        public Builder environment(QredexEnvironment environment) { this.environment = environment; return this; }
+        @NotNull
+        public Builder environment(@NotNull QredexEnvironment environment) { this.environment = environment; return this; }
 
         /** Overrides the base URL regardless of environment. Useful for testing. */
-        public Builder baseUrl(String baseUrl) { this.baseUrl = baseUrl; return this; }
+        @NotNull
+        public Builder baseUrl(@NotNull String baseUrl) { this.baseUrl = baseUrl; return this; }
 
         /** HTTP request timeout in milliseconds. Default is 10,000 ms. */
+        @NotNull
         public Builder timeoutMs(int timeoutMs) { this.timeoutMs = timeoutMs; return this; }
 
         /** Maximum auth retry attempts. Default is 3. */
+        @NotNull
         public Builder maxAuthRetries(int maxAuthRetries) { this.maxAuthRetries = maxAuthRetries; return this; }
 
         /** Optional string appended to the SDK {@code User-Agent} header. */
-        public Builder userAgentSuffix(String userAgentSuffix) { this.userAgentSuffix = userAgentSuffix; return this; }
+        @NotNull
+        public Builder userAgentSuffix(@Nullable String userAgentSuffix) { this.userAgentSuffix = userAgentSuffix; return this; }
 
         /** Optional logger for sanitized request/response diagnostics. Secrets are redacted. */
-        public Builder logger(QredexLogger logger) { this.logger = logger; return this; }
+        @NotNull
+        public Builder logger(@Nullable QredexLogger logger) { this.logger = logger; return this; }
 
+        @NotNull
         public QredexConfig build() {
             if (clientId == null || clientId.trim().isEmpty()) {
                 throw new QredexConfigurationException("QredexConfig requires clientId.");

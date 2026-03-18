@@ -24,6 +24,7 @@ package com.qredex.model.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jetbrains.annotations.Nullable;
 
 /** Influence Intent Token (IIT) issued via the Integrations API. */
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -68,19 +69,31 @@ public final class InfluenceIntentResponse {
     @JsonProperty("landing_path")
     private String landingPath;
 
+    @Nullable
     public String getId() { return id; }
+    @Nullable
     public String getMerchantId() { return merchantId; }
+    @Nullable
     public String getLinkId() { return linkId; }
-    /** The IIT token string. Pass this to the browser agent or directly to {@code lockPurchaseIntent}. */
+    /** The IIT token string. Pass this to {@code lockPurchaseIntent} to continue the server-side flow. */
+    @Nullable
     public String getToken() { return token; }
+    @Nullable
     public String getTokenId() { return tokenId; }
+    @Nullable
     public String getIssuedAt() { return issuedAt; }
+    @Nullable
     public String getExpiresAt() { return expiresAt; }
+    @Nullable
     public String getStatus() { return status; }
     public int getIntegrityVersion() { return integrityVersion; }
+    @Nullable
     public String getIpHash() { return ipHash; }
+    @Nullable
     public String getUserAgentHash() { return userAgentHash; }
+    @Nullable
     public String getReferrer() { return referrer; }
+    @Nullable
     public String getLandingPath() { return landingPath; }
 
     @Override

@@ -22,6 +22,7 @@
  */
 package com.qredex.resources;
 
+import com.qredex.QredexCallOptions;
 import com.qredex.exceptions.QredexValidationException;
 import com.qredex.internal.HttpTransport;
 import com.qredex.internal.QueryParams;
@@ -30,6 +31,8 @@ import com.qredex.model.request.CreateCreatorRequest;
 import com.qredex.model.request.ListCreatorsRequest;
 import com.qredex.model.response.CreatorPageResponse;
 import com.qredex.model.response.CreatorResponse;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Creator resource operations for the Qredex Integrations API.
@@ -53,12 +56,22 @@ public final class CreatorsClient {
      * @return the created {@link CreatorResponse}
      * @throws QredexValidationException if the request is invalid
      */
-    public CreatorResponse create(CreateCreatorRequest request) {
+    @NotNull
+    public CreatorResponse create(@NotNull CreateCreatorRequest request) {
+        return create(request, null);
+    }
+
+    @NotNull
+    public CreatorResponse create(@NotNull CreateCreatorRequest request, @Nullable QredexCallOptions options) {
+        if (request == null) {
+            throw new QredexValidationException("request must not be null.");
+        }
         return transport.post(
             "/api/v1/integrations/creators",
             request,
             tokenProvider.getAuthorizationHeader(),
-            CreatorResponse.class);
+            CreatorResponse.class,
+            options);
     }
 
     /**
@@ -68,7 +81,13 @@ public final class CreatorsClient {
      * @return the {@link CreatorResponse}
      * @throws QredexValidationException if {@code creatorId} is blank
      */
-    public CreatorResponse get(String creatorId) {
+    @NotNull
+    public CreatorResponse get(@Nullable String creatorId) {
+        return get(creatorId, null);
+    }
+
+    @NotNull
+    public CreatorResponse get(@Nullable String creatorId, @Nullable QredexCallOptions options) {
         if (creatorId == null || creatorId.trim().isEmpty()) {
             throw new QredexValidationException("creatorId must not be blank.");
         }
@@ -76,7 +95,8 @@ public final class CreatorsClient {
             "/api/v1/integrations/creators/" + encode(creatorId),
             null,
             tokenProvider.getAuthorizationHeader(),
-            CreatorResponse.class);
+            CreatorResponse.class,
+            options);
     }
 
     /**
@@ -85,7 +105,18 @@ public final class CreatorsClient {
      * @param request optional filters; use {@link ListCreatorsRequest#defaults()} for none
      * @return a paginated {@link CreatorPageResponse}
      */
-    public CreatorPageResponse list(ListCreatorsRequest request) {
+    @NotNull
+    public CreatorPageResponse list() {
+        return list(null, null);
+    }
+
+    @NotNull
+    public CreatorPageResponse list(@Nullable ListCreatorsRequest request) {
+        return list(request, null);
+    }
+
+    @NotNull
+    public CreatorPageResponse list(@Nullable ListCreatorsRequest request, @Nullable QredexCallOptions options) {
         if (request == null) request = ListCreatorsRequest.defaults();
         return transport.get(
             "/api/v1/integrations/creators",
@@ -95,7 +126,8 @@ public final class CreatorsClient {
                 .add("status", request.getStatus() != null ? request.getStatus().getValue() : null)
                 .build(),
             tokenProvider.getAuthorizationHeader(),
-            CreatorPageResponse.class);
+            CreatorPageResponse.class,
+            options);
     }
 
     private static String encode(String value) {

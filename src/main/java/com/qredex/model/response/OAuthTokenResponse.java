@@ -24,6 +24,7 @@ package com.qredex.model.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jetbrains.annotations.Nullable;
 
 /** OAuth2 client-credentials token response from {@code /api/v1/auth/token}. */
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -41,9 +42,13 @@ public final class OAuthTokenResponse {
     @JsonProperty("scope")
     private String scope;
 
+    @Nullable
     public String getAccessToken() { return accessToken; }
+    @Nullable
     public String getTokenType() { return tokenType; }
+    @Nullable
     public Long getExpiresIn() { return expiresIn; }
+    @Nullable
     public String getScope() { return scope; }
 
     @Override

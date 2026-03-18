@@ -13,7 +13,7 @@ This guide walks through a complete Qredex machine integration using the Java SD
 
 - A Qredex merchant account with Integration API credentials (client ID + secret)
 - Java 8+ and Maven 3.6+
-- The `com.qredex:sdk` dependency in your project
+- The `com.qredex:qredex-java` dependency in your project
 
 ---
 
@@ -109,15 +109,9 @@ System.out.println(link.getPublicLinkUrl());
 
 ---
 
-## Step 4A — IIT via redirect (recommended)
+## Step 4 — Issue an IIT (machine flow)
 
-When a shopper clicks the public link URL (`/{merchant}/{creator}/{linkCode}`), Qredex automatically issues an IIT and embeds it in the redirect to your store. No backend action required for this path.
-
-Your storefront reads the IIT from the URL query parameter and passes it to the Qredex browser agent for PIT locking at cart time.
-
-## Step 4B — IIT via backend (machine flow)
-
-For custom click tracking or headless integrations where you process click events server-side:
+Use this SDK when your backend processes click events or explicitly controls the canonical machine flow:
 
 ```java
 InfluenceIntentResponse iit = qredex.intents().issueInfluenceIntentToken(
@@ -129,7 +123,7 @@ InfluenceIntentResponse iit = qredex.intents().issueInfluenceIntentToken(
         .userAgentHash(hashedUa)   // optional
         .build());
 
-String iitToken = iit.getToken();  // pass to browser agent or to step 5
+String iitToken = iit.getToken();  // preserve this for step 5
 ```
 
 ---
@@ -138,11 +132,7 @@ String iitToken = iit.getToken();  // pass to browser agent or to step 5
 
 At add-to-cart time, lock the IIT into a PIT. This snapshots attribution state for the order.
 
-### Browser agent path (recommended for storefronts)
-
-The Qredex browser agent (`@qredex/agent`) handles PIT locking automatically.
-
-### Backend path (machine-to-machine)
+### Machine-to-machine path
 
 ```java
 PurchaseIntentResponse pit = qredex.intents().lockPurchaseIntent(

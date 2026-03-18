@@ -9,6 +9,16 @@ All notable changes to the Qredex Java SDK are documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Changed
+- Clarified server-only positioning in README and integration docs
+- Standardized public artifact naming as `com.qredex:qredex-java`
+- Clarified that local testing should use `baseUrl(...)` rather than treating localhost as a hosted Qredex environment
+
+### Fixed
+- Successful typed HTTP calls now fail fast on empty response bodies instead of returning `null`
+
 ## [0.1.0] — 2026-03-17
 
 ### Added
@@ -26,7 +36,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Forward-compatible enum deserialization with `UNKNOWN` sentinels
 - `Closeable` support for clean shutdown
 - `QredexLogger` interface for sanitized diagnostic logging
-- WireMock-based test suite (31 tests)
+- WireMock-based test suite
 - Integration guide, error reference, and canonical flow examples
 
 ### Fixed

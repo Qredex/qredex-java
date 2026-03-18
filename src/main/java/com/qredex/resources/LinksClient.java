@@ -22,6 +22,7 @@
  */
 package com.qredex.resources;
 
+import com.qredex.QredexCallOptions;
 import com.qredex.exceptions.QredexValidationException;
 import com.qredex.internal.HttpTransport;
 import com.qredex.internal.QueryParams;
@@ -31,6 +32,8 @@ import com.qredex.model.request.ListLinksRequest;
 import com.qredex.model.response.LinkPageResponse;
 import com.qredex.model.response.LinkResponse;
 import com.qredex.model.response.LinkStatsResponse;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Influence link resource operations for the Qredex Integrations API.
@@ -53,12 +56,22 @@ public final class LinksClient {
      * @param request link creation parameters
      * @return the created {@link LinkResponse}
      */
-    public LinkResponse create(CreateLinkRequest request) {
+    @NotNull
+    public LinkResponse create(@NotNull CreateLinkRequest request) {
+        return create(request, null);
+    }
+
+    @NotNull
+    public LinkResponse create(@NotNull CreateLinkRequest request, @Nullable QredexCallOptions options) {
+        if (request == null) {
+            throw new QredexValidationException("request must not be null.");
+        }
         return transport.post(
             "/api/v1/integrations/links",
             request,
             tokenProvider.getAuthorizationHeader(),
-            LinkResponse.class);
+            LinkResponse.class,
+            options);
     }
 
     /**
@@ -67,7 +80,13 @@ public final class LinksClient {
      * @param linkId the UUID of the link
      * @return the {@link LinkResponse}
      */
-    public LinkResponse get(String linkId) {
+    @NotNull
+    public LinkResponse get(@Nullable String linkId) {
+        return get(linkId, null);
+    }
+
+    @NotNull
+    public LinkResponse get(@Nullable String linkId, @Nullable QredexCallOptions options) {
         if (linkId == null || linkId.trim().isEmpty()) {
             throw new QredexValidationException("linkId must not be blank.");
         }
@@ -75,7 +94,8 @@ public final class LinksClient {
             "/api/v1/integrations/links/" + encode(linkId),
             null,
             tokenProvider.getAuthorizationHeader(),
-            LinkResponse.class);
+            LinkResponse.class,
+            options);
     }
 
     /**
@@ -84,7 +104,18 @@ public final class LinksClient {
      * @param request optional filters; use {@link ListLinksRequest#defaults()} for none
      * @return a paginated {@link LinkPageResponse}
      */
-    public LinkPageResponse list(ListLinksRequest request) {
+    @NotNull
+    public LinkPageResponse list() {
+        return list(null, null);
+    }
+
+    @NotNull
+    public LinkPageResponse list(@Nullable ListLinksRequest request) {
+        return list(request, null);
+    }
+
+    @NotNull
+    public LinkPageResponse list(@Nullable ListLinksRequest request, @Nullable QredexCallOptions options) {
         if (request == null) request = ListLinksRequest.defaults();
         return transport.get(
             "/api/v1/integrations/links",
@@ -96,7 +127,8 @@ public final class LinksClient {
                 .add("expired", request.getExpired())
                 .build(),
             tokenProvider.getAuthorizationHeader(),
-            LinkPageResponse.class);
+            LinkPageResponse.class,
+            options);
     }
 
     /**
@@ -105,7 +137,13 @@ public final class LinksClient {
      * @param linkId the UUID of the link
      * @return the {@link LinkStatsResponse}
      */
-    public LinkStatsResponse getStats(String linkId) {
+    @NotNull
+    public LinkStatsResponse getStats(@Nullable String linkId) {
+        return getStats(linkId, null);
+    }
+
+    @NotNull
+    public LinkStatsResponse getStats(@Nullable String linkId, @Nullable QredexCallOptions options) {
         if (linkId == null || linkId.trim().isEmpty()) {
             throw new QredexValidationException("linkId must not be blank.");
         }
@@ -113,7 +151,8 @@ public final class LinksClient {
             "/api/v1/integrations/links/" + encode(linkId) + "/stats",
             null,
             tokenProvider.getAuthorizationHeader(),
-            LinkStatsResponse.class);
+            LinkStatsResponse.class,
+            options);
     }
 
     private static String encode(String value) {

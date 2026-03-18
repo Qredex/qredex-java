@@ -205,6 +205,19 @@ class QredexIntegrationTest {
     }
 
     @Test
+    void creators_list_withoutRequest_happy() {
+        stubTokenEndpoint();
+        stubFor(get(urlPathEqualTo("/api/v1/integrations/creators"))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody("{\"items\":[" + creatorJson("c1", "alice") + "],\"page\":0,\"size\":20,\"total_elements\":1,\"total_pages\":1}")));
+
+        CreatorPageResponse page = qredex.creators().list();
+        assertThat(page.getItems()).hasSize(1);
+    }
+
+    @Test
     void creators_create_validationError() {
         assertThatThrownBy(() -> CreateCreatorRequest.builder().build())
             .isInstanceOf(QredexValidationException.class)
@@ -212,10 +225,45 @@ class QredexIntegrationTest {
     }
 
     @Test
+    void creators_create_nullRequest_validation() {
+        assertThatThrownBy(() -> qredex.creators().create(null))
+            .isInstanceOf(QredexValidationException.class)
+            .hasMessageContaining("request");
+    }
+
+    @Test
     void creators_create_blankCreatorId_validation() {
         stubTokenEndpoint();
         assertThatThrownBy(() -> qredex.creators().get(""))
             .isInstanceOf(QredexValidationException.class);
+    }
+
+    @Test
+    void creators_requestAndResponseCollections_areImmutable() {
+        java.util.Map<String, String> socials = new java.util.LinkedHashMap<String, String>();
+        socials.put("instagram", "alice");
+
+        CreateCreatorRequest request = CreateCreatorRequest.builder()
+            .handle("alice")
+            .socials(socials)
+            .build();
+
+        socials.put("tiktok", "alice2");
+        assertThat(request.getSocials()).containsOnly(entry("instagram", "alice"));
+        assertThatThrownBy(() -> request.getSocials().put("youtube", "alice3"))
+            .isInstanceOf(UnsupportedOperationException.class);
+
+        stubTokenEndpoint();
+        stubFor(get(urlEqualTo("/api/v1/integrations/creators/c1"))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody("{\"id\":\"c1\",\"handle\":\"alice\",\"status\":\"ACTIVE\",\"socials\":{\"instagram\":\"alice\"}}")));
+
+        CreatorResponse response = qredex.creators().get("c1");
+        assertThat(response.getSocials()).containsOnly(entry("instagram", "alice"));
+        assertThatThrownBy(() -> response.getSocials().put("youtube", "alice"))
+            .isInstanceOf(UnsupportedOperationException.class);
     }
 
     // -------------------------------------------------------------------------
@@ -255,6 +303,28 @@ class QredexIntegrationTest {
         LinkStatsResponse stats = qredex.links().getStats("l1");
         assertThat(stats.getClicksCount()).isEqualTo(42L);
         assertThat(stats.getOrdersCount()).isEqualTo(5L);
+    }
+
+    @Test
+    void links_create_nullRequest_validation() {
+        assertThatThrownBy(() -> qredex.links().create(null))
+            .isInstanceOf(QredexValidationException.class)
+            .hasMessageContaining("request");
+    }
+
+    @Test
+    void links_list_withoutRequest_happy() {
+        stubTokenEndpoint();
+        stubFor(get(urlPathEqualTo("/api/v1/integrations/links"))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody("{\"items\":[" + linkJson("l1", "summer-sale") + "],\"page\":0,\"size\":20,\"total_elements\":1,\"total_pages\":1}")));
+
+        LinkPageResponse page = qredex.links().list();
+        assertThat(page.getItems()).hasSize(1);
+        assertThatThrownBy(() -> page.getItems().add(null))
+            .isInstanceOf(UnsupportedOperationException.class);
     }
 
     // -------------------------------------------------------------------------
@@ -312,6 +382,20 @@ class QredexIntegrationTest {
             .isInstanceOf(QredexValidationException.class);
     }
 
+    @Test
+    void intents_issueInfluenceIntentToken_nullRequest_validation() {
+        assertThatThrownBy(() -> qredex.intents().issueInfluenceIntentToken(null))
+            .isInstanceOf(QredexValidationException.class)
+            .hasMessageContaining("request");
+    }
+
+    @Test
+    void intents_lockPurchaseIntent_nullRequest_validation() {
+        assertThatThrownBy(() -> qredex.intents().lockPurchaseIntent(null))
+            .isInstanceOf(QredexValidationException.class)
+            .hasMessageContaining("request");
+    }
+
     // -------------------------------------------------------------------------
     // Orders
     // -------------------------------------------------------------------------
@@ -354,6 +438,22 @@ class QredexIntegrationTest {
     }
 
     @Test
+    void orders_list_withoutRequest_happy() {
+        stubTokenEndpoint();
+        stubFor(get(urlPathEqualTo("/api/v1/integrations/orders"))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody("{\"items\":[" + orderAttributionJson("o1", "ATTRIBUTED") + "]," +
+                          "\"page\":0,\"size\":20,\"total_elements\":1,\"total_pages\":1}")));
+
+        OrderAttributionPageResponse page = qredex.orders().list();
+        assertThat(page.getItems()).hasSize(1);
+        assertThatThrownBy(() -> page.getItems().clear())
+            .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
     void orders_getDetails_happy() {
         stubTokenEndpoint();
         stubFor(get(urlEqualTo("/api/v1/integrations/orders/o1/details"))
@@ -369,6 +469,27 @@ class QredexIntegrationTest {
         assertThat(details.getId()).isEqualTo("o1");
         assertThat(details.getResolutionStatus()).isEqualTo(ResolutionStatus.ATTRIBUTED);
         assertThat(details.getIntegrityScore()).isEqualTo(90);
+    }
+
+    @Test
+    void orders_getDetails_nestedCollections_areImmutable() {
+        stubTokenEndpoint();
+        stubFor(get(urlEqualTo("/api/v1/integrations/orders/o1/details"))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody("{\"id\":\"o1\",\"resolution_status\":\"ATTRIBUTED\",\"integrity_score\":90," +
+                          "\"integrity_band\":\"HIGH\",\"review_required\":false,\"duplicate_suspect\":false," +
+                          "\"timeline\":[{\"event_type\":\"paid\",\"occurred_at\":\"2026-03-17T00:00:00Z\"}]," +
+                          "\"score_breakdown_json\":{\"review_reasons\":[\"origin_mismatch\"]}}")));
+
+        OrderAttributionDetailsResponse details = qredex.orders().getDetails("o1");
+        assertThat(details.getTimeline()).hasSize(1);
+        assertThat(details.getScoreBreakdown().getReviewReasons()).containsExactly("origin_mismatch");
+        assertThatThrownBy(() -> details.getTimeline().clear())
+            .isInstanceOf(UnsupportedOperationException.class);
+        assertThatThrownBy(() -> details.getScoreBreakdown().getReviewReasons().add("duplicate"))
+            .isInstanceOf(UnsupportedOperationException.class);
     }
 
     @Test
@@ -398,6 +519,13 @@ class QredexIntegrationTest {
                 RecordPaidOrderRequest.builder()
                     .storeId("s1").externalOrderId("o1").currency("").build()))
             .isInstanceOf(QredexValidationException.class);
+    }
+
+    @Test
+    void orders_recordPaidOrder_nullRequest_validation() {
+        assertThatThrownBy(() -> qredex.orders().recordPaidOrder(null))
+            .isInstanceOf(QredexValidationException.class)
+            .hasMessageContaining("request");
     }
 
     // -------------------------------------------------------------------------
@@ -431,6 +559,13 @@ class QredexIntegrationTest {
                 RecordRefundRequest.builder()
                     .storeId("s1").externalOrderId("o1").externalRefundId("").build()))
             .isInstanceOf(QredexValidationException.class);
+    }
+
+    @Test
+    void refunds_recordRefund_nullRequest_validation() {
+        assertThatThrownBy(() -> qredex.refunds().recordRefund(null))
+            .isInstanceOf(QredexValidationException.class)
+            .hasMessageContaining("request");
     }
 
     // -------------------------------------------------------------------------
@@ -506,6 +641,20 @@ class QredexIntegrationTest {
                 assertThat(ex.getStatus()).isEqualTo(429);
                 assertThat(ex.getRetryAfterSeconds()).isEqualTo(60L);
             });
+    }
+
+    @Test
+    void transport_emptySuccessfulBody_throwsNetworkException() {
+        stubTokenEndpoint();
+        stubFor(get(urlEqualTo("/api/v1/integrations/creators/c1"))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody("")));
+
+        assertThatThrownBy(() -> qredex.creators().get("c1"))
+            .isInstanceOf(QredexNetworkException.class)
+            .hasMessageContaining("empty response body");
     }
 
     @Test

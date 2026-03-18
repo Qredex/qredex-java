@@ -76,6 +76,13 @@
     </properties>
 
     <dependencies>
+        <!-- Public nullability metadata for Kotlin/Java interop -->
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>24.1.0</version>
+        </dependency>
+
         <!-- HTTP client: OkHttp 4.x supports Java 8+ -->
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
