@@ -15,8 +15,34 @@ permissions:
   contents: write
 
 jobs:
-  tag-release:
+  # Run CI first to validate the release
+  ci-validation:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java-version: [8, 11, 17, 21]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up JDK ${{ matrix.java-version }}
+        uses: actions/setup-java@v5
+        with:
+          java-version: ${{ matrix.java-version }}
+          distribution: temurin
+          cache: maven
+
+      - name: Build and test
+        run: mvn clean verify --batch-mode --no-transfer-progress -DskipGPG=true
+
+  # Create tag only after CI passes
+  tag-release:
+    needs: ci-validation
+    runs-on: ubuntu-latest
+    outputs:
+      tag_created: ${{ steps.version_check.outputs.changed == 'true' && steps.tag_check.outputs.exists == 'false' }}
+      tag_name: ${{ steps.version_check.outputs.current_version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -36,15 +62,15 @@ jobs:
           # Get current version
           CURRENT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
-          
+
           # Get previous version from parent commit
           git checkout HEAD~1 -- pom.xml 2>/dev/null || echo "No previous commit"
           PREVIOUS_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout 2>/dev/null || echo "none")
           git checkout HEAD -- pom.xml
-          
+
           echo "Previous version: $PREVIOUS_VERSION"
           echo "Current version: $CURRENT_VERSION"
-          
+
           if [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ]; then
             echo "changed=true" >> $GITHUB_OUTPUT
             echo "✓ Version changed: $PREVIOUS_VERSION → $CURRENT_VERSION"

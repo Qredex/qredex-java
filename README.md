@@ -38,18 +38,7 @@ Canonical Java server SDK for Qredex machine-to-machine integrations.
 
 ## Installation
 
-Maven Central publication is not live until the release `pom.xml` includes the deployment profile required by the release workflow.
-Until then, install from a local build:
-
-```bash
-mvn -B clean install
-```
-
-Then consume the artifact from your local Maven repository.
-
-When public publication is enabled, the dependency coordinates will remain:
-
-**Maven coordinates:**
+**Maven Central** (once published):
 
 ```xml
 <dependency>
@@ -64,6 +53,14 @@ When public publication is enabled, the dependency coordinates will remain:
 ```groovy
 implementation 'com.qredex:qredex-java:0.1.0'
 ```
+
+**Local build** (until Maven Central publication is live):
+
+```bash
+mvn -B clean install
+```
+
+Then consume the artifact from your local Maven repository.
 
 ## Quick Start
 
