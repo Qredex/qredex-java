@@ -6,7 +6,7 @@ name: Publish to Maven Central
 on:
   push:
     tags:
-      - "v*.*.*"
+      - "v*"  # Match any tag starting with v (e.g., v0.1.0, v0.1.0-SNAPSHOT)
   workflow_dispatch:
     inputs:
       release_ref:
