@@ -84,9 +84,9 @@ jobs:
           # Import GPG key
           echo "$MAVEN_GPG_PRIVATE_KEY" | gpg --batch --import
           
-          # Deploy to Maven Central (staging repository)
+          # Deploy to Maven Central (staging repository) with GPG signing
           mvn -B deploy \
-            -Possrh \
+            -Psign-artifacts \
             -Dgpg.passphrase="$MAVEN_GPG_PASSPHRASE" \
             -DskipTests
           
