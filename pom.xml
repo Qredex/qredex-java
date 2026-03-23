@@ -177,7 +177,7 @@
                 </executions>
             </plugin>
 
-            <!-- GPG signing for Maven Central -->
+            <!-- GPG signing for Maven Central releases only -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
@@ -197,19 +197,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!-- Nexus Staging for Maven Central deployment -->
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.7.0</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
@@ -226,6 +213,31 @@
             <properties>
                 <gpg.skip>true</gpg.skip>
             </properties>
+        </profile>
+
+        <!-- Nexus Staging profile for Maven Central releases -->
+        <profile>
+            <id>nexus-deploy</id>
+            <activation>
+                <property>
+                    <name>!skipGPG</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.7.0</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>

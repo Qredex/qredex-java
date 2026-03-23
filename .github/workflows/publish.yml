@@ -86,7 +86,7 @@ jobs:
           
           # Deploy to Maven Central (staging repository) with GPG signing
           mvn -B deploy \
-            -DskipGPG=false \
+            -Pnexus-deploy \
             -Dgpg.passphrase="$MAVEN_GPG_PASSPHRASE" \
             -DskipTests
           
