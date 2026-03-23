@@ -214,16 +214,17 @@
     </build>
 
     <profiles>
-        <!-- GPG signing for Maven Central deployment -->
+        <!-- Skip GPG signing when -DskipGPG=true is passed -->
         <profile>
-            <id>sign-artifacts</id>
+            <id>skip-gpg</id>
             <activation>
                 <property>
-                    <name>!skipGPG</name>
+                    <name>skipGPG</name>
+                    <value>true</value>
                 </property>
             </activation>
             <properties>
-                <gpg.skip>false</gpg.skip>
+                <gpg.skip>true</gpg.skip>
             </properties>
         </profile>
     </profiles>
