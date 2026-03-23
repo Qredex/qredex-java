@@ -88,3 +88,22 @@ jobs:
             --generate-notes \
             --verify-tag
           echo "✓ Created GitHub Release: ${{ steps.tag.outputs.tag }}"
+
+      - name: Publish to Maven Central
+        env:
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          MAVEN_GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+        run: |
+          # Import GPG key
+          echo "$MAVEN_GPG_PRIVATE_KEY" | gpg --batch --import
+          
+          # Deploy to Maven Central (staging repository)
+          mvn -B deploy \
+            -Possrh \
+            -Dgpg.passphrase="$MAVEN_GPG_PASSPHRASE" \
+            -DskipTests
+          
+          echo "✓ Published to Maven Central staging repository"
+          echo "Note: Auto-release is enabled - artifacts will be promoted to Maven Central automatically"
