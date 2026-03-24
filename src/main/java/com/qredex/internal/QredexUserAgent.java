@@ -25,7 +25,7 @@ package com.qredex.internal;
 /** Produces the SDK User-Agent header value. */
 public final class QredexUserAgent {
 
-    static final String SDK_VERSION = "0.1.0";
+    static final String SDK_VERSION = "0.1.1";
     private static final String JAVA_VERSION = System.getProperty("java.version", "unknown");
 
     public static String build(String suffix) {

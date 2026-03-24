@@ -44,14 +44,14 @@ Canonical Java server SDK for Qredex machine-to-machine integrations.
 <dependency>
     <groupId>com.qredex</groupId>
     <artifactId>qredex-java</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 </dependency>
 ```
 
 **Gradle:**
 
 ```groovy
-implementation 'com.qredex:qredex-java:0.1.0'
+implementation 'com.qredex:qredex-java:0.1.1'
 ```
 
 **Local build** (until Maven Central publication is live):
