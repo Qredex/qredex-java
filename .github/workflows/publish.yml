@@ -103,7 +103,7 @@ jobs:
 
           # Deploy to Maven Central via Central Portal plugin with GPG signing
           mvn -B clean deploy \
-            -DskipGPG=false \
+            -Dgpg.skip=false \
             -Dgpg.passphrase="$MAVEN_GPG_PASSPHRASE" \
             -DskipTests
 
