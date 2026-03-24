@@ -24,6 +24,7 @@
 # `qredex-java`
 
 [![CI](https://github.com/Qredex/qredex-java/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Qredex/qredex-java/actions/workflows/ci.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/com.qredex/qredex-java.svg)](https://central.sonatype.com/artifact/com.qredex/qredex-java)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Java](https://img.shields.io/badge/java-8%2B-orange.svg)](https://www.java.com/)
 
@@ -35,10 +36,11 @@ Canonical Java server SDK for Qredex machine-to-machine integrations.
 
 - Java 8+
 - Maven 3.6+ or Gradle 7+
+- Kotlin/JVM projects are supported (this SDK is a standard JVM library).
 
 ## Installation
 
-**Maven Central** (once published):
+**Maven Central:**
 
 ```xml
 <dependency>
@@ -54,7 +56,13 @@ Canonical Java server SDK for Qredex machine-to-machine integrations.
 implementation 'com.qredex:qredex-java:0.1.1'
 ```
 
-**Local build** (until Maven Central publication is live):
+**Gradle Kotlin DSL:**
+
+```kotlin
+implementation("com.qredex:qredex-java:0.1.1")
+```
+
+**Local build** (optional, for local-only testing):
 
 ```bash
 mvn -B clean install
@@ -118,6 +126,18 @@ qredex.refunds().recordRefund(
         .externalRefundId("refund-100045-1")
         .refundTotal(25.00)
         .build());
+```
+
+Kotlin/JVM usage is the same API surface:
+
+```kotlin
+val qredex = Qredex.bootstrap()
+val creator = qredex.creators().create(
+    CreateCreatorRequest.builder()
+        .handle("alice")
+        .displayName("Alice")
+        .build()
+)
 ```
 
 ## Why This SDK
