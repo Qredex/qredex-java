@@ -6,12 +6,12 @@ name: Publish to Maven Central
 on:
   push:
     tags:
-      - "v*"  # Match any tag starting with v (e.g., v0.1.0, v0.1.0-SNAPSHOT)
+      - "v*.*.*"
   workflow_dispatch:
     inputs:
       release_ref:
         description: "Release tag to publish (e.g., v0.1.0)"
-        required: false
+        required: true
 
 permissions:
   contents: write
@@ -21,24 +21,32 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
       - name: Resolve release tag
         id: tag
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.release_ref }}" ]; then
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             TAG="${{ github.event.inputs.release_ref }}"
           elif [ "${{ github.event_name }}" = "push" ]; then
             TAG="${{ github.ref_name }}"
           else
-            TAG=$(git describe --tags --abbrev=0)
+            echo "Unsupported event: ${{ github.event_name }}"
+            exit 1
+          fi
+          if [ -z "$TAG" ]; then
+            echo "Release tag is required"
+            exit 1
           fi
           echo "tag=$TAG" >> $GITHUB_OUTPUT
           echo "Publishing tag: $TAG"
 
-      - name: Checkout
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ steps.tag.outputs.tag }}
-          fetch-depth: 0
+      - name: Checkout release tag
+        run: |
+          git checkout "refs/tags/${{ steps.tag.outputs.tag }}"
 
       - name: Set up JDK 17
         uses: actions/setup-java@v5
@@ -46,12 +54,21 @@ jobs:
           java-version: 17
           distribution: temurin
           cache: maven
+          server-id: central
+          server-username: MAVEN_CENTRAL_USERNAME
+          server-password: MAVEN_CENTRAL_PASSWORD
 
       - name: Verify version match
         run: |
           POM_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           TAG_VERSION="${{ steps.tag.outputs.tag }}"
           TAG_VERSION="${TAG_VERSION#v}"  # strip v prefix
+          case "$TAG_VERSION" in
+            *-SNAPSHOT)
+              echo "Error: snapshot tags cannot be published: $TAG_VERSION"
+              exit 1
+              ;;
+          esac
           if [ "$POM_VERSION" != "$TAG_VERSION" ]; then
             echo "Error: pom.xml version ($POM_VERSION) != tag version ($TAG_VERSION)"
             exit 1
@@ -70,7 +87,7 @@ jobs:
 
       - name: Verify Maven Central deployment is configured
         run: |
-          grep -q "<distributionManagement>" pom.xml || (echo "Missing distributionManagement in pom.xml." && exit 1)
+          grep -q "central-publishing-maven-plugin" pom.xml || (echo "Missing central-publishing-maven-plugin in pom.xml." && exit 1)
           grep -q "maven-gpg-plugin" pom.xml || (echo "Missing maven-gpg-plugin in pom.xml." && exit 1)
           echo "Maven Central deployment configuration detected."
 
@@ -83,15 +100,14 @@ jobs:
         run: |
           # Import GPG key
           echo "$MAVEN_GPG_PRIVATE_KEY" | gpg --batch --import
-          
-          # Deploy to Maven Central (staging repository) with GPG signing
-          mvn -B deploy \
-            -Pnexus-deploy \
+
+          # Deploy to Maven Central via Central Portal plugin with GPG signing
+          mvn -B clean deploy \
+            -DskipGPG=false \
             -Dgpg.passphrase="$MAVEN_GPG_PASSPHRASE" \
             -DskipTests
-          
-          echo "✓ Published to Maven Central staging repository"
-          echo "Note: Auto-release is enabled - artifacts will be promoted to Maven Central automatically"
+
+          echo "✓ Published to Maven Central"
 
       - name: Generate release notes
         id: release_notes
