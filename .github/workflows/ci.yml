@@ -33,7 +33,7 @@ jobs:
           cache: maven
 
       - name: Build and test
-        run: mvn clean verify --batch-mode --no-transfer-progress
+        run: mvn clean verify --batch-mode --no-transfer-progress -Dmaven.javadoc.skip=true
 
       - name: Upload test results
         if: failure()

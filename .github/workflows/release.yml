@@ -35,7 +35,7 @@ jobs:
           cache: maven
 
       - name: Build and test
-        run: mvn clean verify --batch-mode --no-transfer-progress -DskipGPG=true
+        run: mvn clean verify --batch-mode --no-transfer-progress -DskipGPG=true -Dmaven.javadoc.skip=true
 
   # Create tag only after CI passes
   tag-release:

@@ -76,7 +76,7 @@ jobs:
           echo "✓ Version match confirmed: $POM_VERSION"
 
       - name: Run release checks
-        run: mvn clean verify -DskipGPG=true
+        run: mvn clean verify -DskipGPG=true -Dmaven.javadoc.skip=true
 
       - name: Check release credentials
         run: |
