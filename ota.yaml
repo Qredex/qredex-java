@@ -1,0 +1,83 @@
+version: 1
+project:
+  name: Qredex Java Server SDK
+  description: Official Java server SDK for machine-to-machine integrations
+  type: library
+metadata:
+  team: sdk
+  owner: Qredex
+  repo_class: java-sdk
+runtimes:
+  java: '8'
+execution:
+  preferred: native
+  supported:
+    - native
+tools:
+  maven: '*'
+tasks:
+  setup:
+    description: Warm the Maven dependency cache
+    category: setup
+    run: mvn -q dependency:go-offline
+    safe_for_agent: true
+  build:
+    description: Build the Java SDK
+    category: build
+    run: mvn package
+    depends_on:
+      - setup
+    safe_for_agent: true
+  test:
+    description: Run the Java test suite
+    category: test
+    run: mvn test
+    depends_on:
+      - setup
+    safe_for_agent: true
+  version:bump:
+    description: Bump the release version
+    category: release
+    script: |
+      ./scripts/release-version.sh
+    inputs:
+      version:
+        description: New semantic version to apply
+        required: true
+  ci:
+    description: Run the Java verification suite
+    category: test
+    run: mvn clean verify --batch-mode --no-transfer-progress -Dmaven.javadoc.skip=true
+    depends_on:
+      - setup
+    safe_for_agent: true
+agent:
+  entrypoint: setup
+  default_task: ci
+  safe_tasks:
+    - setup
+    - build
+    - test
+    - ci
+  verify_after_changes:
+    - test
+    - ci
+  writable_paths:
+    - src
+    - README.md
+    - CHANGELOG.md
+    - docs
+  protected_paths:
+    - target
+    - pom.xml
+    - ota.yaml
+  notes: |
+    Use the Ota workflow first for setup, validation, and task execution.
+    Treat Ota as the default workflow, the way npm is the default in Node repos.
+    Use `ota validate` to verify the contract.
+    Use `ota doctor` to inspect readiness and agent guidance.
+    Use `ota tasks` to discover runnable repo actions.
+    Use `ota run setup` to prepare the repo.
+    Use `ota run ci` to run the canonical verification path.
+    Keep the Java 8 compatibility boundary explicit.
+    Use mvn test and mvn package as the primary verification and release path.

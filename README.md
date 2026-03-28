@@ -65,7 +65,8 @@ implementation("com.qredex:qredex-java:0.1.1")
 **Local build** (optional, for local-only testing):
 
 ```bash
-mvn -B clean install
+ota run setup
+ota run build
 ```
 
 Then consume the artifact from your local Maven repository.
@@ -393,16 +394,16 @@ The shortest safe backend path is:
 
 ## Testing
 
-`mvn test` runs unit and WireMock-based HTTP integration tests only. No network access is required.
+`ota run test` runs unit and WireMock-based HTTP integration tests only. No network access is required.
 
 Live integration tests are opt-in and skipped unless `QREDEX_LIVE_ENABLED=1` and the required credentials are set. Tag: `@Tag("live")`.
 
 ```bash
-# Run all tests
-mvn test
+# Run the test suite
+ota run test
 
-# Run full build including tests
-mvn clean verify
+# Run the full verification suite
+ota run ci
 ```
 
 ## Scope

@@ -4,11 +4,12 @@
 
 set -e
 
-VERSION="$1"
+VERSION="${OTA_INPUT_VERSION:-${1:-}}"
 
 if [ -z "$VERSION" ]; then
     echo "Usage: ./scripts/release-version.sh <version>"
     echo "Example: ./scripts/release-version.sh 0.2.0"
+    echo "Optional: --skip-validation"
     exit 1
 fi
 
