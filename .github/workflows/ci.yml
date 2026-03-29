@@ -40,10 +40,6 @@ jobs:
         if: matrix.java-version == 8
         run: ota validate
 
-      - name: Inspect Ota readiness
-        if: matrix.java-version == 8
-        run: ota doctor
-
       - name: Build and test
         if: matrix.java-version == 8
         run: ota run ci

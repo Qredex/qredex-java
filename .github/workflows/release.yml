@@ -72,9 +72,6 @@ jobs:
       - name: Validate Ota contract
         run: ota validate
 
-      - name: Inspect Ota readiness
-        run: ota doctor
-
       - name: Check if version changed in pom.xml
         id: version_check
         run: |
