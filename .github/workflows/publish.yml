@@ -26,6 +26,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install Ota
+        run: curl -fsSL https://dist.ota.run/install.sh | sh
+
       - name: Resolve release tag
         id: tag
         run: |
@@ -58,6 +61,12 @@ jobs:
           server-username: MAVEN_CENTRAL_USERNAME
           server-password: MAVEN_CENTRAL_PASSWORD
 
+      - name: Validate Ota contract
+        run: ota validate
+
+      - name: Inspect Ota readiness
+        run: ota doctor
+
       - name: Verify version match
         run: |
           POM_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
@@ -76,7 +85,7 @@ jobs:
           echo "✓ Version match confirmed: $POM_VERSION"
 
       - name: Run release checks
-        run: mvn clean verify -DskipGPG=true -Dmaven.javadoc.skip=true
+        run: ota run release-check
 
       - name: Check release credentials
         run: |

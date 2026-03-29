@@ -51,6 +51,13 @@ tasks:
     depends_on:
       - setup
     safe_for_agent: true
+  release-check:
+    description: Run the Java release verification suite
+    category: release
+    run: mvn clean verify -DskipGPG=true -Dmaven.javadoc.skip=true
+    depends_on:
+      - setup
+    safe_for_agent: true
 agent:
   entrypoint: setup
   default_task: ci
@@ -59,9 +66,11 @@ agent:
     - build
     - test
     - ci
+    - release-check
   verify_after_changes:
     - test
     - ci
+    - release-check
   writable_paths:
     - src
     - README.md

@@ -25,6 +25,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Install Ota
+        run: curl -fsSL https://dist.ota.run/install.sh | sh
+
       - name: Set up JDK ${{ matrix.java-version }}
         uses: actions/setup-java@v5
         with:
@@ -32,8 +35,14 @@ jobs:
           distribution: temurin
           cache: maven
 
+      - name: Validate Ota contract
+        run: ota validate
+
+      - name: Inspect Ota readiness
+        run: ota doctor
+
       - name: Build and test
-        run: mvn clean verify --batch-mode --no-transfer-progress -Dmaven.javadoc.skip=true
+        run: ota run ci
 
       - name: Upload test results
         if: failure()
