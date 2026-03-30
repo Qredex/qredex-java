@@ -18,11 +18,15 @@ tools:
 tasks:
   setup:
     description: Warm the Maven dependency cache
+    notes: |
+      Use this first after cloning or when Maven dependencies change.
     category: setup
     run: mvn -q dependency:go-offline
     safe_for_agent: true
   build:
     description: Build the Java SDK
+    notes: |
+      Use this to confirm the SDK still builds before release work.
     category: build
     run: mvn package
     depends_on:
@@ -30,6 +34,8 @@ tasks:
     safe_for_agent: true
   test:
     description: Run the Java test suite
+    notes: |
+      Use this for the standard Java unit test pass.
     category: test
     run: mvn test
     depends_on:
@@ -37,6 +43,8 @@ tasks:
     safe_for_agent: true
   version:bump:
     description: Bump the release version
+    notes: |
+      Use this when preparing a new Java SDK release version.
     category: release
     script: |
       ./scripts/release-version.sh
@@ -46,6 +54,8 @@ tasks:
         required: true
   ci:
     description: Run the Java verification suite
+    notes: |
+      Use this as the canonical local verification path before merging changes.
     category: test
     run: mvn clean verify --batch-mode --no-transfer-progress -Dmaven.javadoc.skip=true
     depends_on:
@@ -53,6 +63,8 @@ tasks:
     safe_for_agent: true
   release-check:
     description: Run the Java release verification suite
+    notes: |
+      Use this to validate release readiness before publishing the SDK.
     category: release
     run: mvn clean verify -DskipGPG=true -Dmaven.javadoc.skip=true
     depends_on:
