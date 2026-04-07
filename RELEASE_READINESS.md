@@ -128,21 +128,21 @@ The Qredex Java SDK has undergone comprehensive infrastructure-grade hardening a
 Use Ota for the release bump step:
 
 ```bash
-ota run version:bump --version 0.2.0
+ota run version:bump --version minor
 ```
 
 The direct script path remains available as a fallback:
 
 ```bash
-./scripts/release-version.sh 0.2.0
+./scripts/release-version.sh minor
 ```
 
 ### Automated Release Flow
 ```
 Developer                   GitHub Actions
     ↓                            ↓
-[1] ota run version:bump --version 0.2.0
-    - Or run `./scripts/release-version.sh 0.2.0`
+[1] ota run version:bump --version minor
+    - Or run `./scripts/release-version.sh minor`
     - Updates pom.xml
     - Updates QredexUserAgent
     - Updates README

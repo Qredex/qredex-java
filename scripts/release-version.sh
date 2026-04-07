@@ -4,22 +4,56 @@
 
 set -e
 
-VERSION="${OTA_INPUT_VERSION:-${1:-}}"
+INPUT_VERSION="${OTA_INPUT_VERSION:-${1:-}}"
 
-if [ -z "$VERSION" ]; then
-    echo "Usage: ./scripts/release-version.sh <version>"
+if [ -z "$INPUT_VERSION" ]; then
+    echo "Usage: ./scripts/release-version.sh major|minor|patch|<version>"
+    echo "Example: ./scripts/release-version.sh minor"
     echo "Example: ./scripts/release-version.sh 0.2.0"
-    echo "Optional: --skip-validation"
     exit 1
 fi
 
-# Validate semver format
-if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
-    echo "Error: Invalid semver format: $VERSION"
-    echo "Expected format: X.Y.Z or X.Y.Z-prerelease"
+CURRENT_VERSION="$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)"
+
+if [ -z "$CURRENT_VERSION" ]; then
+    echo "Error: Could not determine the current project version."
     exit 1
 fi
 
+resolve_version() {
+    local current="$1"
+    local input="$2"
+    local major minor patch
+
+    IFS='.' read -r major minor patch <<< "$current"
+    case "$input" in
+        major)
+            echo "$((major + 1)).0.0"
+            ;;
+        minor)
+            echo "$major.$((minor + 1)).0"
+            ;;
+        patch)
+            echo "$major.$minor.$((patch + 1))"
+            ;;
+        *)
+            echo "$input"
+            ;;
+    esac
+}
+
+if [ "$INPUT_VERSION" = "major" ] || [ "$INPUT_VERSION" = "minor" ] || [ "$INPUT_VERSION" = "patch" ]; then
+    VERSION="$(resolve_version "$CURRENT_VERSION" "$INPUT_VERSION")"
+else
+    VERSION="${INPUT_VERSION#v}"
+    if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
+        echo "Error: Invalid semver format: $INPUT_VERSION"
+        echo "Expected format: X.Y.Z, X.Y.Z-prerelease, or major/minor/patch"
+        exit 1
+    fi
+fi
+
+echo "Current version: $CURRENT_VERSION"
 echo "Updating version to: $VERSION"
 
 # Update pom.xml
