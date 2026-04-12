@@ -26,8 +26,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Ota
-        run: curl -fsSL https://dist.ota.run/install.sh | sh
+      - name: Setup ota
+        uses: ota-run/setup@v1
+        with:
+          ota-version: 1.4.4
 
       - name: Resolve release tag
         id: tag
