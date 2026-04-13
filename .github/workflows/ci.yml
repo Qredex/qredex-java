@@ -28,7 +28,7 @@ jobs:
       - name: Setup ota
         uses: ota-run/setup@v1
         with:
-          ota-version: 1.4.4
+          ota-version: 1.4.7
 
       - name: Set up JDK ${{ matrix.java-version }}
         uses: actions/setup-java@v5

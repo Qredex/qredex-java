@@ -31,7 +31,7 @@ jobs:
         if: matrix.java-version == 8
         uses: ota-run/setup@v1
         with:
-          ota-version: 1.4.4
+          ota-version: 1.4.7
 
       - name: Set up JDK ${{ matrix.java-version }}
         uses: actions/setup-java@v5
@@ -64,7 +64,7 @@ jobs:
       - name: Setup ota
         uses: ota-run/setup@v1
         with:
-          ota-version: 1.4.4
+          ota-version: 1.4.7
 
       - name: Set up Java
         uses: actions/setup-java@v5
