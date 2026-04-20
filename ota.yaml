@@ -8,11 +8,18 @@ metadata:
   owner: Qredex
   repo_class: java-sdk
 runtimes:
-  java: '>=8'
+  java: '>=21'
 execution:
-  preferred: native
+  preferred: container
   supported:
     - native
+    - container
+  lifecycle: persistent
+  backends:
+    container:
+      image: maven:3.9.14-eclipse-temurin-21-noble
+      engines:
+        - docker
 tools:
   maven: '*'
 tasks:
